@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuralTrade AI — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --gold: #F5C842;
+    --navy: #050D1A;
+    --navy2: #0A1628;
+    --navy3: #0F1F3D;
+    --white: #F0F4FF;
+    --muted: #7A8BAA;
+    --border: rgba(245,200,66,0.12);
+    --card: rgba(10,22,40,0.95);
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --sidebar-w: 240px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--navy2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+  }
+
+  .sidebar-logo {
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .logo-text span { color: var(--gold); }
+
+  .logo-badge {
+    display: inline-block;
+    background: rgba(34,197,94,0.1);
+    color: var(--success);
+    font-size: 0.65rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.3rem;
+    font-weight: 600;
+    vertical-align: middle;
+  }
+
+  .sidebar-nav {
+    padding: 1rem 0;
+    flex: 1;
+  }
+
+  .nav-section {
+    padding: 0.5rem 1.25rem 0.25rem;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1.25rem;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    border-radius: 0;
+  }
+
+  .nav-item:hover {
+    color: var(--white);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .nav-item.active {
+    color: var(--gold);
+    background: rgba(245,200,66,0.08);
+    border-right: 2px solid var(--gold);
+  }
+
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 0.65rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 100px;
+    font-weight: 700;
+  }
+
+  .sidebar-bottom {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(245,200,66,0.15);
+    border: 1px solid rgba(245,200,66,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .user-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--white);
+  }
+
+  .user-plan {
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  /* ── Main ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Topbar ── */
+  .topbar {
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--navy2);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+
+  .topbar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .bot-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.2);
+    padding: 0.4rem 0.8rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    color: var(--success);
+    font-weight: 500;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .btn-stop {
+    padding: 0.4rem 0.8rem;
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    color: var(--danger);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .btn-stop:hover { background: rgba(239,68,68,0.2); }
+
+  /* ── Content ── */
+  .content {
+    padding: 1.5rem 2rem;
+    flex: 1;
+  }
+
+  /* ── Metric cards ── */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .metric-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    transition: all 0.2s;
+  }
+
+  .metric-card:hover {
+    border-color: rgba(245,200,66,0.25);
+    transform: translateY(-2px);
+  }
+
+  .metric-label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .metric-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .metric-change {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .metric-change.up { color: var(--success); }
+  .metric-change.down { color: var(--danger); }
+  .metric-change.neutral { color: var(--muted); }
+
+  /* ── Grid layout ── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .card-action {
+    font-size: 0.75rem;
+    color: var(--gold);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .card-body { padding: 1.25rem; }
+
+  /* ── Chart ── */
+  .chart-wrap {
+    padding: 1rem 1.25rem 1.25rem;
+    height: 220px;
+  }
+
+  /* ── Trade table ── */
+  .trade-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .trade-table th {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.6rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+
+  .trade-table td {
+    padding: 0.7rem 1rem;
+    font-size: 0.82rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .trade-table tr:last-child td { border-bottom: none; }
+
+  .trade-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .side-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .side-buy {
+    background: rgba(34,197,94,0.1);
+    color: var(--success);
+    border: 1px solid rgba(34,197,94,0.2);
+  }
+
+  .side-sell {
+    background: rgba(239,68,68,0.1);
+    color: var(--danger);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+
+  .pnl-pos { color: var(--success); font-weight: 500; }
+  .pnl-neg { color: var(--danger); font-weight: 500; }
+
+  .status-filled {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    margin-right: 4px;
+  }
+
+  /* ── Bot settings ── */
+  .settings-grid {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .setting-row:last-child { border-bottom: none; }
+
+  .setting-label {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .setting-value {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .toggle {
+    width: 32px;
+    height: 18px;
+    border-radius: 9px;
+    background: var(--success);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .toggle.off { background: rgba(255,255,255,0.15); }
+
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 16px;
+    transition: left 0.2s;
+  }
+
+  .toggle.off::after { left: 2px; }
+
+  /* ── Coins grid ── */
+  .coins-grid {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .coin-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .coin-row:last-child { border-bottom: none; }
+
+  .coin-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .coin-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(245,200,66,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .coin-name { font-size: 0.82rem; font-weight: 500; }
+  .coin-signal { font-size: 0.72rem; }
+  .signal-buy { color: var(--success); font-weight: 600; }
+  .signal-sell { color: var(--danger); font-weight: 600; }
+  .signal-hold { color: var(--muted); }
+
+  .coin-rsi {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* ── Telegram section ── */
+  .telegram-card {
+    background: linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(15,31,61,0.95) 100%);
+    border-color: rgba(37,99,235,0.2);
+  }
+
+  .tg-input-wrap {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .tg-input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+  }
+
+  .tg-input:focus { border-color: rgba(37,99,235,0.5); }
+
+  .btn-connect {
+    padding: 0.6rem 1rem;
+    background: rgba(37,99,235,0.3);
+    border: 1px solid rgba(37,99,235,0.4);
+    border-radius: 8px;
+    color: #93c5fd;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-connect:hover { background: rgba(37,99,235,0.4); }
+
+  /* ── API Keys section ── */
+  .api-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .api-input {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    color: var(--white);
+    font-family: monospace;
+    font-size: 0.8rem;
+    outline: none;
+  }
+
+  .api-input:focus { border-color: rgba(245,200,66,0.3); }
+
+  .btn-save {
+    padding: 0.6rem 1rem;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    color: var(--navy);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-save:hover { background: #FFD84D; }
+
+  /* ── Notification toast ── */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--navy3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.875rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    z-index: 1000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 320px;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast-success { border-color: rgba(34,197,94,0.3); }
+  .toast-icon { font-size: 18px; }
+
+  /* ── Plan upgrade banner ── */
+  .upgrade-banner {
+    background: linear-gradient(135deg, rgba(245,200,66,0.1) 0%, rgba(15,31,61,0.9) 100%);
+    border: 1px solid rgba(245,200,66,0.2);
+    border-radius: 14px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .upgrade-text { font-size: 0.85rem; color: var(--muted); }
+  .upgrade-text strong { color: var(--white); display: block; margin-bottom: 0.2rem; }
+
+  .btn-upgrade {
+    padding: 0.5rem 1rem;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    color: var(--navy);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+
+  .btn-upgrade:hover { background: #FFD84D; }
+
+  @media (max-width: 1024px) {
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="index.html" class="logo-text">Neural<span>Trade</span> AI</a>
+    <span class="logo-badge">LIVE</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">Main</div>
+    <a class="nav-item active" onclick="showPage('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+    <a class="nav-item" onclick="showPage('trades')">
+      <span class="nav-icon">📈</span> Trade History
+      <span class="nav-badge">12</span>
+    </a>
+    <a class="nav-item" onclick="showPage('signals')">
+      <span class="nav-icon">🎯</span> Live Signals
+    </a>
+    <a class="nav-item" onclick="showPage('portfolio')">
+      <span class="nav-icon">💼</span> Portfolio
+    </a>
+
+    <div class="nav-section">Bot</div>
+    <a class="nav-item" onclick="showPage('settings')">
+      <span class="nav-icon">⚙️</span> Bot Settings
+    </a>
+    <a class="nav-item" onclick="showPage('apikeys')">
+      <span class="nav-icon">🔑</span> API Keys
+    </a>
+    <a class="nav-item" onclick="showPage('telegram')">
+      <span class="nav-icon">📱</span> Telegram
+    </a>
+
+    <div class="nav-section">Account</div>
+    <a class="nav-item" onclick="showPage('billing')">
+      <span class="nav-icon">💳</span> Billing & Plans
+    </a>
+    <a class="nav-item" onclick="showPage('security')">
+      <span class="nav-icon">🛡️</span> Security
+    </a>
+    <a class="nav-item" href="auth.html">
+      <span class="nav-icon">🚪</span> Sign Out
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="user-info">
+      <div class="avatar">EA</div>
+      <div>
+        <div class="user-name">elamashur</div>
+        <div class="user-plan">Free Plan</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard Overview</div>
+    <div class="topbar-right">
+      <div class="bot-status">
+        <div class="status-dot"></div>
+        Bot Active
+      </div>
+      <button class="btn-stop" onclick="toggleBot()">⏹ Stop Bot</button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Upgrade banner -->
+    <div class="upgrade-banner">
+      <div class="upgrade-text">
+        <strong>Upgrade to Pro — Unlock 11 coins + Claude AI brain</strong>
+        You're on the Free plan. Trade more coins and earn more with Pro!
+      </div>
+      <button class="btn-upgrade" onclick="showPage('billing')">Upgrade $29/mo →</button>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-label">💰 Total Balance</div>
+        <div class="metric-value" id="m-balance">$10,028</div>
+        <div class="metric-change up">↑ +$28 today</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">📈 Total P&L</div>
+        <div class="metric-value" id="m-pnl" style="color:var(--success)">+$28.83</div>
+        <div class="metric-change up">↑ +0.29% all time</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">🎯 Win Rate</div>
+        <div class="metric-value" id="m-winrate">68%</div>
+        <div class="metric-change up">↑ Above average</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">📊 Total Trades</div>
+        <div class="metric-value" id="m-trades">12</div>
+        <div class="metric-change neutral">→ 3 trades today</div>
+      </div>
+    </div>
+
+    <!-- Chart + Coins -->
+    <div class="grid-3">
+
+      <!-- P&L Chart -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">P&L Performance</div>
+          <button class="card-action">7D ▾</button>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="pnlChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Live signals -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🎯 Live Signals</div>
+          <div style="font-size:0.7rem;color:var(--success)">● Live</div>
+        </div>
+        <div class="card-body">
+          <div class="coins-grid" id="signals-list">
+            <!-- populated by JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Recent trades + Bot settings -->
+    <div class="grid-2">
+
+      <!-- Recent trades -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent Trades</div>
+          <button class="card-action">View all →</button>
+        </div>
+        <table class="trade-table">
+          <thead>
+            <tr>
+              <th>Coin</th>
+              <th>Side</th>
+              <th>Entry</th>
+              <th>P&L</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="trades-tbody">
+            <!-- populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bot settings -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚙️ Bot Settings</div>
+          <button class="card-action" onclick="showPage('settings')">Edit →</button>
+        </div>
+        <div class="card-body">
+          <div class="settings-grid">
+            <div class="setting-row">
+              <span class="setting-label">Bot Status</span>
+              <span class="setting-value">
+                <div class="toggle" id="bot-toggle" onclick="toggleBot()"></div>
+                Running
+              </span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Market</span>
+              <span class="setting-value">Futures (Linear)</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Leverage</span>
+              <span class="setting-value">3x</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Risk per trade</span>
+              <span class="setting-value">2%</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Take Profit</span>
+              <span class="setting-value" style="color:var(--success)">+4%</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Stop Loss</span>
+              <span class="setting-value" style="color:var(--danger)">-1%</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Max daily loss</span>
+              <span class="setting-value">5%</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Scan interval</span>
+              <span class="setting-value">60 sec</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Market Bias</span>
+              <span class="setting-value" style="color:var(--gold)">BUY (Fear market)</span>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Telegram alerts</span>
+              <span class="setting-value">
+                <div class="toggle"></div>
+                Enabled
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- API Keys + Telegram -->
+    <div class="grid-2">
+
+      <!-- API Keys -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔑 Bybit API Keys</div>
+          <span style="font-size:0.72rem;color:var(--success)">✓ Connected</span>
+        </div>
+        <div class="card-body">
+          <div style="margin-bottom:0.75rem">
+            <div class="metric-label" style="margin-bottom:0.4rem">API Key</div>
+            <div class="api-row">
+              <input class="api-input" type="password" value="5uIQzI2KCjF8f32EYi" id="api-key-input">
+              <button class="btn-save" onclick="toggleApiVisibility('api-key-input')">Show</button>
+            </div>
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <div class="metric-label" style="margin-bottom:0.4rem">API Secret</div>
+            <div class="api-row">
+              <input class="api-input" type="password" value="9mlWLViSgDebdJoNnZoc..." id="api-secret-input">
+              <button class="btn-save" onclick="showToast('API keys updated successfully!')">Save</button>
+            </div>
+          </div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem">
+            🛡️ Keys are encrypted and stored securely. We never withdraw funds.
+          </div>
+        </div>
+      </div>
+
+      <!-- Telegram -->
+      <div class="card telegram-card">
+        <div class="card-header">
+          <div class="card-title">📱 Telegram Notifications</div>
+          <span style="font-size:0.72rem;color:var(--success)">✓ Active</span>
+        </div>
+        <div class="card-body">
+          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:0.75rem;font-weight:300">
+            Receive instant trade notifications on your phone via Telegram bot.
+          </div>
+          <div class="metric-label" style="margin-bottom:0.4rem">Your Telegram Chat ID</div>
+          <div class="tg-input-wrap">
+            <input class="tg-input" type="text" value="1234240158" placeholder="Enter Chat ID">
+            <button class="btn-connect" onclick="showToast('Telegram connected! You will receive a test message.')">Test</button>
+          </div>
+          <div style="margin-top:1rem;font-size:0.8rem;color:var(--muted)">
+            Available commands:<br>
+            <code style="color:var(--gold)">/balance /trades /status /stop /start /help</code>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast toast-success" id="toast">
+  <span class="toast-icon">✅</span>
+  <span id="toast-msg">Success!</span>
+</div>
+
+<script>
+  // ── Live signals data ──
+  const coinsData = [
+    { symbol: 'BTC', rsi: 42.1, signal: 'BUY', trend: 'UP' },
+    { symbol: 'ETH', rsi: 38.7, signal: 'BUY', trend: 'UP' },
+    { symbol: 'SOL', rsi: 71.3, signal: 'SELL', trend: 'DOWN' },
+    { symbol: 'BNB', rsi: 51.2, signal: 'HOLD', trend: 'UP' },
+    { symbol: 'XRP', rsi: 35.9, signal: 'BUY', trend: 'UP' },
+  ];
+
+  function renderSignals() {
+    const list = document.getElementById('signals-list');
+    list.innerHTML = coinsData.map(c => `
+      <div class="coin-row">
+        <div class="coin-info">
+          <div class="coin-icon">${c.symbol.slice(0,3)}</div>
+          <div>
+            <div class="coin-name">${c.symbol}/USDT</div>
+            <div class="coin-signal ${c.signal === 'BUY' ? 'signal-buy' : c.signal === 'SELL' ? 'signal-sell' : 'signal-hold'}">
+              ${c.signal === 'BUY' ? '▲ BUY' : c.signal === 'SELL' ? '▼ SELL' : '— HOLD'}
+            </div>
+          </div>
+        </div>
+        <div class="coin-rsi">
+          <div>RSI ${c.rsi}</div>
+          <div style="color:${c.trend === 'UP' ? 'var(--success)' : 'var(--danger)'};font-size:0.7rem">${c.trend}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ── Recent trades data ──
+  const tradesData = [
+    { coin: 'SOLUSDT', side: 'BUY', entry: '86.50', pnl: '+$4.20', status: 'Filled' },
+    { coin: 'BTCUSDT', side: 'SELL', entry: '83,420', pnl: '-$1.80', status: 'Filled' },
+    { coin: 'ETHUSDT', side: 'BUY', entry: '2,341', pnl: '+$6.40', status: 'Filled' },
+    { coin: 'SOLUSDT', side: 'BUY', entry: '85.20', pnl: '+$3.10', status: 'Filled' },
+    { coin: 'BTCUSDT', side: 'BUY', entry: '82,100', pnl: '+$8.90', status: 'Filled' },
+  ];
+
+  function renderTrades() {
+    const tbody = document.getElementById('trades-tbody');
+    tbody.innerHTML = tradesData.map(t => `
+      <tr>
+        <td style="font-weight:500">${t.coin}</td>
+        <td><span class="side-badge ${t.side === 'BUY' ? 'side-buy' : 'side-sell'}">${t.side}</span></td>
+        <td style="color:var(--muted)">$${t.entry}</td>
+        <td class="${t.pnl.startsWith('+') ? 'pnl-pos' : 'pnl-neg'}">${t.pnl}</td>
+        <td><span class="status-filled"></span>Filled</td>
+      </tr>
+    `).join('');
+  }
+
+  // ── P&L Chart ──
+  function initChart() {
+    const ctx = document.getElementById('pnlChart').getContext('2d');
+    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const data = [10000, 10008, 10005, 10015, 10012, 10022, 10028];
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Balance',
+          data,
+          borderColor: '#F5C842',
+          backgroundColor: 'rgba(245,200,66,0.08)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#F5C842',
+          pointRadius: 3,
+          pointHoverRadius: 5,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#0A1628',
+            borderColor: 'rgba(245,200,66,0.2)',
+            borderWidth: 1,
+            titleColor: '#F0F4FF',
+            bodyColor: '#F5C842',
+            callbacks: {
+              label: ctx => `$${ctx.raw.toLocaleString()}`
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { color: '#7A8BAA', font: { size: 11 } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: {
+              color: '#7A8BAA',
+              font: { size: 11 },
+              callback: v => `$${v.toLocaleString()}`
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ── Bot toggle ──
+  let botRunning = true;
+  function toggleBot() {
+    botRunning = !botRunning;
+    const toggle = document.getElementById('bot-toggle');
+    const statusEl = document.querySelector('.bot-status');
+    const stopBtn = document.querySelector('.btn-stop');
+
+    toggle.classList.toggle('off', !botRunning);
+
+    if (botRunning) {
+      statusEl.innerHTML = '<div class="status-dot"></div> Bot Active';
+      statusEl.style.color = 'var(--success)';
+      stopBtn.textContent = '⏹ Stop Bot';
+      showToast('Bot resumed! Watching market...');
+    } else {
+      statusEl.innerHTML = '⏸ Bot Paused';
+      statusEl.style.color = 'var(--warning)';
+      stopBtn.textContent = '▶ Start Bot';
+      showToast('Bot paused. Click Start to resume.');
+    }
+  }
+
+  // ── Toast ──
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+
+  // ── API visibility toggle ──
+  function toggleApiVisibility(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  // ── Page navigation ──
+  function showPage(page) {
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    event?.target?.closest('.nav-item')?.classList.add('active');
+
+    const titles = {
+      dashboard: 'Dashboard Overview',
+      trades: 'Trade History',
+      signals: 'Live Signals',
+      portfolio: 'Portfolio',
+      settings: 'Bot Settings',
+      apikeys: 'API Keys',
+      telegram: 'Telegram Setup',
+      billing: 'Billing & Plans',
+      security: 'Security Settings',
+    };
+
+    document.getElementById('page-title').textContent = titles[page] || 'Dashboard';
+    showToast(`${titles[page]} — coming soon!`);
+  }
+
+  // ── Live signal updates ──
+  setInterval(() => {
+    coinsData.forEach(coin => {
+      if (Math.random() > 0.7) {
+        coin.rsi = parseFloat((20 + Math.random() * 60).toFixed(1));
+        coin.signal = coin.rsi < 45 ? 'BUY' : coin.rsi > 55 ? 'SELL' : 'HOLD';
+        coin.trend = Math.random() > 0.5 ? 'UP' : 'DOWN';
+      }
+    });
+    renderSignals();
+  }, 5000);
+
+  // ── Init ──
+  renderSignals();
+  renderTrades();
+  initChart();
+</script>
+</body>
+</html>
