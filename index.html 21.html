@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuralTrade AI — The AI That Trades Smarter</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F5C842;
+    --gold-dim: #C9A227;
+    --navy: #050D1A;
+    --navy2: #0A1628;
+    --navy3: #0F1F3D;
+    --white: #F0F4FF;
+    --muted: #7A8BAA;
+    --card: rgba(15,31,61,0.8);
+    --border: rgba(245,200,66,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── Background ── */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,200,66,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,200,66,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,200,66,0.06) 0%, transparent 70%);
+    top: -100px;
+    right: -100px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-glow2 {
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(20,80,200,0.08) 0%, transparent 70%);
+    bottom: 100px;
+    left: -100px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Nav ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(5,13,26,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--white);
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--gold); }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  .nav-cta {
+    background: var(--gold);
+    color: var(--navy) !important;
+    padding: 0.55rem 1.4rem;
+    border-radius: 8px;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    transition: all 0.2s !important;
+  }
+
+  .nav-cta:hover {
+    background: #FFD84D !important;
+    color: var(--navy) !important;
+    transform: translateY(-1px);
+  }
+
+  /* ── Sections ── */
+  section { position: relative; z-index: 1; }
+
+  /* ── Hero ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(245,200,66,0.1);
+    border: 1px solid rgba(245,200,66,0.3);
+    color: var(--gold);
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  .hero h1 .gold { color: var(--gold); }
+
+  .hero h1 .outline {
+    -webkit-text-stroke: 2px var(--gold);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+    font-weight: 300;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 4rem;
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    padding: 0.875rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-primary:hover {
+    background: #FFD84D;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(245,200,66,0.3);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--white);
+    padding: 0.875rem 2rem;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.05);
+  }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 2rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    max-width: 700px;
+    margin: 0 auto;
+    animation: fadeUp 0.6s ease 0.4s both;
+  }
+
+  .stat { text-align: center; }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  /* ── Live ticker ── */
+  .ticker-wrap {
+    overflow: hidden;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 4rem 0;
+    background: rgba(10,22,40,0.5);
+  }
+
+  .ticker {
+    display: flex;
+    gap: 3rem;
+    animation: scroll 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+  }
+
+  .ticker-item .up { color: #22c55e; }
+  .ticker-item .down { color: #ef4444; }
+  .ticker-item strong { color: var(--white); }
+
+  /* ── Features ── */
+  .features {
+    padding: 6rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.8rem;
+    color: var(--gold);
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    max-width: 500px;
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 4rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .feature-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(245,200,66,0.3);
+    transform: translateY(-4px);
+    background: rgba(15,31,61,0.95);
+  }
+
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(245,200,66,0.1);
+    border: 1px solid rgba(245,200,66,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .feature-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+
+  .feature-desc {
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── How it works ── */
+  .how {
+    padding: 6rem 4rem;
+    background: var(--navy2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .how-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .step {
+    text-align: center;
+    position: relative;
+  }
+
+  .step-num {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(245,200,66,0.1);
+    border: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 0 auto 1.2rem;
+  }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .step-desc {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* ── Pricing ── */
+  .pricing {
+    padding: 6rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .price-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .price-card.featured {
+    border-color: var(--gold);
+    background: rgba(245,200,66,0.05);
+  }
+
+  .price-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .popular-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.25rem 0.8rem;
+    border-radius: 100px;
+    white-space: nowrap;
+    font-family: 'Syne', sans-serif;
+  }
+
+  .plan-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .plan-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .plan-price span {
+    font-size: 1rem;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .plan-desc {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-bottom: 2rem;
+    font-weight: 300;
+  }
+
+  .plan-features {
+    list-style: none;
+    text-align: left;
+    margin-bottom: 2rem;
+  }
+
+  .plan-features li {
+    font-size: 0.85rem;
+    color: var(--muted);
+    padding: 0.4rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 300;
+  }
+
+  .plan-features li::before {
+    content: '✓';
+    color: var(--gold);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .plan-btn {
+    display: block;
+    padding: 0.75rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    width: 100%;
+  }
+
+  .plan-btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--white);
+  }
+
+  .plan-btn-outline:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .plan-btn-gold {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .plan-btn-gold:hover {
+    background: #FFD84D;
+    transform: translateY(-1px);
+  }
+
+  /* ── Mission ── */
+  .mission {
+    padding: 6rem 4rem;
+    background: var(--navy2);
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .mission-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .mission blockquote {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--white);
+    margin: 2rem 0;
+    position: relative;
+    padding: 0 2rem;
+  }
+
+  .mission blockquote::before {
+    content: '"';
+    position: absolute;
+    left: -0.5rem;
+    top: -1rem;
+    font-size: 5rem;
+    color: var(--gold);
+    opacity: 0.3;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  .mission-author {
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .mission-author strong {
+    color: var(--gold);
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 6rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(245,200,66,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-inner { max-width: 600px; margin: 0 auto; position: relative; }
+
+  .cta-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: -1px;
+  }
+
+  .cta-section p {
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ── Footer ── */
+  footer {
+    padding: 3rem 4rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  footer .logo { font-size: 1.1rem; }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--white); }
+
+  .footer-copy {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Live bot widget ── */
+  .bot-widget {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    max-width: 380px;
+    margin: 3rem auto 0;
+    text-align: left;
+    animation: fadeUp 0.6s ease 0.5s both;
+  }
+
+  .widget-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .widget-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse 2s infinite;
+  }
+
+  .widget-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .widget-badge {
+    margin-left: auto;
+    background: rgba(34,197,94,0.1);
+    color: #22c55e;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    font-weight: 600;
+  }
+
+  .widget-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .widget-row:last-child { border-bottom: none; }
+
+  .widget-coin { color: var(--white); font-weight: 500; }
+  .widget-signal-buy { color: #22c55e; font-size: 0.75rem; font-weight: 600; }
+  .widget-signal-sell { color: #ef4444; font-size: 0.75rem; font-weight: 600; }
+  .widget-signal-hold { color: var(--muted); font-size: 0.75rem; }
+  .widget-rsi { color: var(--muted); font-size: 0.75rem; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .features, .pricing, .how, .mission, .cta-section { padding: 4rem 1.5rem; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="logo">Neural<span>Trade</span> AI</div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#start" class="nav-cta">Get Started Free →</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">🤖 AI-Powered Trading • Live 24/7</div>
+
+  <h1>
+    The AI That<br>
+    <span class="gold">Trades Smarter</span><br>
+    <span class="outline">For Everyone</span>
+  </h1>
+
+  <p class="hero-sub">
+    NeuralTrade AI combines Claude AI, live news analysis, social sentiment and machine learning to trade crypto automatically — so you can focus on living your life.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#start" class="btn-primary">Start Free Today →</a>
+    <a href="#how" class="btn-secondary">See how it works</a>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-num">11+</span>
+      <div class="stat-label">Coins Traded</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num">24/7</span>
+      <div class="stat-label">Always Running</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num">3x</span>
+      <div class="stat-label">Smart Leverage</div>
+    </div>
+    <div class="stat">
+      <span class="stat-num">$0</span>
+      <div class="stat-label">To Start</div>
+    </div>
+  </div>
+
+  <!-- Live bot widget -->
+  <div class="bot-widget">
+    <div class="widget-header">
+      <div class="widget-dot"></div>
+      <div class="widget-title">NeuralTrade AI — Live Signals</div>
+      <div class="widget-badge">LIVE</div>
+    </div>
+    <div class="widget-row">
+      <span class="widget-coin">BTC/USDT</span>
+      <span class="widget-rsi">RSI 42.1</span>
+      <span class="widget-signal-buy">▲ BUY</span>
+    </div>
+    <div class="widget-row">
+      <span class="widget-coin">ETH/USDT</span>
+      <span class="widget-rsi">RSI 38.7</span>
+      <span class="widget-signal-buy">▲ BUY</span>
+    </div>
+    <div class="widget-row">
+      <span class="widget-coin">SOL/USDT</span>
+      <span class="widget-rsi">RSI 71.3</span>
+      <span class="widget-signal-sell">▼ SELL</span>
+    </div>
+    <div class="widget-row">
+      <span class="widget-coin">BNB/USDT</span>
+      <span class="widget-rsi">RSI 51.2</span>
+      <span class="widget-signal-hold">— HOLD</span>
+    </div>
+    <div class="widget-row">
+      <span class="widget-coin">DOGE/USDT</span>
+      <span class="widget-rsi">RSI 35.9</span>
+      <span class="widget-signal-buy">▲ BUY</span>
+    </div>
+  </div>
+</section>
+
+<!-- Ticker -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <div class="ticker-item"><strong>BTC</strong> $83,420 <span class="up">+2.4%</span></div>
+    <div class="ticker-item"><strong>ETH</strong> $2,341 <span class="up">+1.8%</span></div>
+    <div class="ticker-item"><strong>SOL</strong> $87.50 <span class="down">-0.9%</span></div>
+    <div class="ticker-item"><strong>BNB</strong> $412 <span class="up">+3.1%</span></div>
+    <div class="ticker-item"><strong>XRP</strong> $1.24 <span class="up">+0.7%</span></div>
+    <div class="ticker-item"><strong>ADA</strong> $0.64 <span class="down">-1.2%</span></div>
+    <div class="ticker-item"><strong>DOGE</strong> $0.142 <span class="up">+5.2%</span></div>
+    <div class="ticker-item"><strong>AVAX</strong> $22.10 <span class="up">+2.9%</span></div>
+    <div class="ticker-item"><strong>LINK</strong> $13.40 <span class="up">+1.5%</span></div>
+    <div class="ticker-item"><strong>DOT</strong> $4.82 <span class="down">-0.4%</span></div>
+    <!-- duplicate for seamless loop -->
+    <div class="ticker-item"><strong>BTC</strong> $83,420 <span class="up">+2.4%</span></div>
+    <div class="ticker-item"><strong>ETH</strong> $2,341 <span class="up">+1.8%</span></div>
+    <div class="ticker-item"><strong>SOL</strong> $87.50 <span class="down">-0.9%</span></div>
+    <div class="ticker-item"><strong>BNB</strong> $412 <span class="up">+3.1%</span></div>
+    <div class="ticker-item"><strong>XRP</strong> $1.24 <span class="up">+0.7%</span></div>
+    <div class="ticker-item"><strong>ADA</strong> $0.64 <span class="down">-1.2%</span></div>
+    <div class="ticker-item"><strong>DOGE</strong> $0.142 <span class="up">+5.2%</span></div>
+    <div class="ticker-item"><strong>AVAX</strong> $22.10 <span class="up">+2.9%</span></div>
+    <div class="ticker-item"><strong>LINK</strong> $13.40 <span class="up">+1.5%</span></div>
+    <div class="ticker-item"><strong>DOT</strong> $4.82 <span class="down">-0.4%</span></div>
+  </div>
+</div>
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="section-label">Why NeuralTrade AI</div>
+  <h2 class="section-title">Everything you need.<br>Nothing you don't.</h2>
+  <p class="section-sub">Built for everyone — from complete beginners to professional traders. No experience needed.</p>
+
+  <div class="features-grid">
+    <div class="feature-card fade-up">
+      <div class="feature-icon">🧠</div>
+      <div class="feature-title">Claude AI Brain</div>
+      <div class="feature-desc">The world's most advanced AI analyzes markets like a professional trader and makes smart decisions every 60 seconds — automatically.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">📰</div>
+      <div class="feature-title">Live News Analysis</div>
+      <div class="feature-desc">Reads global crypto news in real-time. Reacts to market-moving events before most traders even see the headline.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">Social Sentiment</div>
+      <div class="feature-desc">Monitors Twitter, Reddit and Telegram sentiment. Knows when the crowd is fearful or greedy — and trades accordingly.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Multi-Timeframe Analysis</div>
+      <div class="feature-desc">Analyzes 15-minute, 1-hour and 4-hour charts simultaneously for the highest confidence signals.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">🛡️</div>
+      <div class="feature-title">Advanced Security</div>
+      <div class="feature-desc">Automatic stop-loss, daily loss limits, balance protection and max trade limits. Your money is always protected.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">⚙️</div>
+      <div class="feature-title">Self-Optimizing</div>
+      <div class="feature-desc">Learns from every trade. Gets smarter every day. Automatically adjusts settings based on what's working.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">🌍</div>
+      <div class="feature-title">11+ Coins</div>
+      <div class="feature-desc">Trades BTC, ETH, SOL, BNB, XRP, ADA, DOGE, AVAX, LINK, DOT and more — finding opportunities around the clock.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">📲</div>
+      <div class="feature-title">Telegram Control</div>
+      <div class="feature-desc">Control your bot from your phone. Check balance, view trades, pause or resume — all from Telegram with simple commands.</div>
+    </div>
+    <div class="feature-card fade-up">
+      <div class="feature-icon">☁️</div>
+      <div class="feature-title">Cloud 24/7</div>
+      <div class="feature-desc">Runs on cloud servers around the clock. No PC needed. Trades while you sleep, work or spend time with family.</div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div class="section-label">Simple Setup</div>
+    <h2 class="section-title">Up and running<br>in minutes</h2>
+    <p class="section-sub">No coding knowledge required. No complex setup. Just connect and let AI do the work.</p>
+
+    <div class="steps">
+      <div class="step fade-up">
+        <div class="step-num">1</div>
+        <div class="step-title">Create Account</div>
+        <div class="step-desc">Sign up free in 30 seconds. No credit card required to start.</div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">2</div>
+        <div class="step-title">Connect Bybit</div>
+        <div class="step-desc">Add your Bybit API key. Takes 2 minutes. We never touch your funds directly.</div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">3</div>
+        <div class="step-title">Choose Your Plan</div>
+        <div class="step-desc">Start free or upgrade for more coins and AI features.</div>
+      </div>
+      <div class="step fade-up">
+        <div class="step-num">4</div>
+        <div class="step-title">AI Takes Over</div>
+        <div class="step-desc">NeuralTrade AI starts analyzing and trading automatically. You just watch the profits.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing" id="pricing">
+  <div class="section-label">Simple Pricing</div>
+  <h2 class="section-title">Start free.<br>Upgrade when ready.</h2>
+  <p class="section-sub">We believe financial freedom is for everyone. That's why we offer a generous free plan — forever.</p>
+
+  <div class="pricing-grid">
+    <div class="price-card fade-up">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">$0<span>/mo</span></div>
+      <div class="plan-desc">Perfect for getting started</div>
+      <ul class="plan-features">
+        <li>3 coins (BTC, ETH, SOL)</li>
+        <li>Basic RSI + MACD strategy</li>
+        <li>Telegram notifications</li>
+        <li>Daily reports</li>
+        <li>Community support</li>
+      </ul>
+      <a href="#start" class="plan-btn plan-btn-outline">Get Started Free</a>
+    </div>
+
+    <div class="price-card featured fade-up">
+      <div class="popular-badge">Most Popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$29<span>/mo</span></div>
+      <div class="plan-desc">For serious traders</div>
+      <ul class="plan-features">
+        <li>11+ coins including TRUMP</li>
+        <li>Claude AI brain decisions</li>
+        <li>Live news analysis</li>
+        <li>Social sentiment tracking</li>
+        <li>Multi-timeframe analysis</li>
+        <li>Self-optimization</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="#start" class="plan-btn plan-btn-gold">Start Pro →</a>
+    </div>
+
+    <div class="price-card fade-up">
+      <div class="plan-name">Business</div>
+      <div class="plan-price">$99<span>/mo</span></div>
+      <div class="plan-desc">For professional traders</div>
+      <ul class="plan-features">
+        <li>Everything in Pro</li>
+        <li>All exchanges supported</li>
+        <li>Custom strategy builder</li>
+        <li>Advanced backtesting</li>
+        <li>Portfolio management</li>
+        <li>Dedicated support</li>
+        <li>API access</li>
+      </ul>
+      <a href="#start" class="plan-btn plan-btn-outline">Get Business</a>
+    </div>
+  </div>
+</section>
+
+<!-- Mission -->
+<section class="mission" id="mission">
+  <div class="mission-inner fade-up">
+    <div class="section-label">Our Mission</div>
+    <blockquote>
+      "Financial freedom is a human right, not a privilege. NeuralTrade AI exists to give everyone on earth — regardless of background, education or wealth — access to the same AI trading technology used by Wall Street professionals."
+    </blockquote>
+    <div class="mission-author">
+      <strong>NeuralTrade AI</strong>
+      Built with love. For everyone. 🌍
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="start">
+  <div class="cta-inner fade-up">
+    <h2>Start trading smarter<br><span style="color:var(--gold)">today — for free.</span></h2>
+    <p>Join thousands of traders using NeuralTrade AI to grow their wealth automatically. No experience needed. No risk to start.</p>
+    <a href="#" class="btn-primary" style="font-size:1.1rem; padding:1rem 2.5rem;">
+      Create Free Account →
+    </a>
+    <p style="margin-top:1rem; font-size:0.8rem; color:var(--muted);">
+      No credit card required • Free forever plan available • Cancel anytime
+    </p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="logo">Neural<span>Trade</span> AI</div>
+  <ul class="footer-links">
+    <li><a href="#">Features</a></li>
+    <li><a href="#">Pricing</a></li>
+    <li><a href="#">Privacy</a></li>
+    <li><a href="#">Terms</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 NeuralTrade AI. Built for everyone. 🌍</div>
+</footer>
+
+<script>
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Animate stats counter
+  function animateCounter(el, target, duration = 2000) {
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) {
+        el.textContent = target.toLocaleString();
+        clearInterval(timer);
+      } else {
+        el.textContent = Math.floor(start).toLocaleString();
+      }
+    }, 16);
+  }
+
+  // Live widget animation
+  const signals = ['▲ BUY', '▼ SELL', '— HOLD'];
+  const signalClasses = ['widget-signal-buy', 'widget-signal-sell', 'widget-signal-hold'];
+
+  setInterval(() => {
+    const rows = document.querySelectorAll('.widget-row');
+    rows.forEach(row => {
+      if (Math.random() > 0.7) {
+        const idx = Math.floor(Math.random() * 3);
+        const sigEl = row.querySelector('[class^="widget-signal"]');
+        if (sigEl) {
+          sigEl.textContent = signals[idx];
+          sigEl.className = signalClasses[idx];
+        }
+        const rsiEl = row.querySelector('.widget-rsi');
+        if (rsiEl) {
+          rsiEl.textContent = `RSI ${(25 + Math.random() * 50).toFixed(1)}`;
+        }
+      }
+    });
+  }, 3000);
+</script>
+</body>
+</html>
