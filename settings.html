@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuralTrade AI — Bot Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F5C842; --navy: #050D1A; --navy2: #0A1628; --navy3: #0F1F3D;
+    --white: #F0F4FF; --muted: #7A8BAA; --border: rgba(245,200,66,0.12);
+    --card: rgba(10,22,40,0.95); --success: #22c55e; --danger: #ef4444;
+    --warning: #f59e0b; --sidebar-w: 240px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--navy); color:var(--white); font-family:'DM Sans',sans-serif; display:flex; min-height:100vh; font-size:14px; }
+  .sidebar { width:var(--sidebar-w); min-height:100vh; background:var(--navy2); border-right:1px solid var(--border); display:flex; flex-direction:column; position:fixed; top:0; left:0; z-index:50; }
+  .sidebar-logo { padding:1.5rem 1.25rem; border-bottom:1px solid var(--border); }
+  .logo-text { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:var(--white); text-decoration:none; }
+  .logo-text span { color:var(--gold); }
+  .nav-section { padding:0.5rem 1.25rem 0.25rem; font-size:0.65rem; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; font-weight:600; margin-top:0.5rem; }
+  .nav-item { display:flex; align-items:center; gap:0.75rem; padding:0.65rem 1.25rem; color:var(--muted); text-decoration:none; font-size:0.875rem; font-weight:500; transition:all 0.2s; cursor:pointer; }
+  .nav-item:hover { color:var(--white); background:rgba(255,255,255,0.04); }
+  .nav-item.active { color:var(--gold); background:rgba(245,200,66,0.08); border-right:2px solid var(--gold); }
+  .nav-icon { font-size:16px; width:20px; text-align:center; }
+  .sidebar-bottom { padding:1rem 1.25rem; border-top:1px solid var(--border); margin-top:auto; }
+  .avatar { width:36px; height:36px; border-radius:50%; background:rgba(245,200,66,0.15); border:1px solid rgba(245,200,66,0.3); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; color:var(--gold); }
+  .user-info { display:flex; align-items:center; gap:0.75rem; }
+  .user-name { font-size:0.85rem; font-weight:500; }
+  .user-plan { font-size:0.7rem; color:var(--muted); }
+  .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; }
+  .topbar { padding:1rem 2rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--navy2); position:sticky; top:0; z-index:40; }
+  .topbar-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; }
+  .btn-save-all { padding:0.5rem 1.2rem; background:var(--gold); border:none; border-radius:8px; color:var(--navy); font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
+  .btn-save-all:hover { background:#FFD84D; }
+  .content { padding:1.5rem 2rem; }
+  .settings-sections { display:grid; gap:1.5rem; }
+  .section-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .section-header { padding:1rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:0.75rem; }
+  .section-icon { font-size:1.2rem; }
+  .section-title { font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; }
+  .section-body { padding:1.5rem; display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+  .field { display:flex; flex-direction:column; gap:0.4rem; }
+  .field-label { font-size:0.78rem; color:var(--muted); font-weight:500; letter-spacing:0.5px; }
+  .field-desc { font-size:0.72rem; color:rgba(122,139,170,0.7); margin-top:0.2rem; }
+  select, input[type="number"], input[type="text"] {
+    background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px;
+    padding:0.6rem 0.8rem; color:var(--white); font-family:'DM Sans',sans-serif;
+    font-size:0.875rem; outline:none; transition:all 0.2s; width:100%;
+  }
+  select:focus, input:focus { border-color:rgba(245,200,66,0.4); background:rgba(245,200,66,0.04); }
+  select option { background:var(--navy2); }
+  .toggle-row { display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .toggle-row:last-child { border-bottom:none; }
+  .toggle-info .tl { font-size:0.85rem; font-weight:500; }
+  .toggle-info .td { font-size:0.75rem; color:var(--muted); margin-top:0.2rem; font-weight:300; }
+  .toggle { width:36px; height:20px; border-radius:10px; background:var(--success); position:relative; cursor:pointer; transition:background 0.2s; flex-shrink:0; }
+  .toggle.off { background:rgba(255,255,255,0.15); }
+  .toggle::after { content:''; position:absolute; width:16px; height:16px; border-radius:50%; background:white; top:2px; left:18px; transition:left 0.2s; }
+  .toggle.off::after { left:2px; }
+  .coins-section { padding:1.5rem; }
+  .coins-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.75rem; margin-top:1rem; }
+  .coin-toggle { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:0.75rem; display:flex; flex-direction:column; align-items:center; gap:0.4rem; cursor:pointer; transition:all 0.2s; }
+  .coin-toggle.active { background:rgba(245,200,66,0.08); border-color:rgba(245,200,66,0.3); }
+  .coin-toggle:hover { border-color:rgba(245,200,66,0.2); }
+  .coin-sym { font-family:'Syne',sans-serif; font-size:0.85rem; font-weight:700; }
+  .coin-toggle.active .coin-sym { color:var(--gold); }
+  .coin-risk { font-size:0.65rem; padding:0.15rem 0.4rem; border-radius:4px; font-weight:600; }
+  .risk-low { background:rgba(34,197,94,0.1); color:var(--success); }
+  .risk-med { background:rgba(245,200,66,0.1); color:var(--gold); }
+  .risk-high { background:rgba(239,68,68,0.1); color:var(--danger); }
+  .check { font-size:0.7rem; color:var(--success); }
+  .toast { position:fixed; bottom:2rem; right:2rem; background:var(--navy3); border:1px solid rgba(34,197,94,0.3); border-radius:12px; padding:0.875rem 1.25rem; display:flex; align-items:center; gap:0.75rem; font-size:0.85rem; z-index:1000; transform:translateY(100px); opacity:0; transition:all 0.3s; }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .section-body.full { grid-template-columns:1fr; }
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="index.html" class="logo-text">Neural<span>Trade</span> AI</a></div>
+  <nav style="padding:1rem 0;flex:1;">
+    <div class="nav-section">Main</div>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <a class="nav-item" href="trades.html"><span class="nav-icon">📈</span> Trade History</a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">🎯</span> Live Signals</a>
+    <div class="nav-section">Bot</div>
+    <a class="nav-item active" href="settings.html"><span class="nav-icon">⚙️</span> Bot Settings</a>
+    <a class="nav-item" href="apikeys.html"><span class="nav-icon">🔑</span> API Keys</a>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">📱</span> Telegram</a>
+    <div class="nav-section">Account</div>
+    <a class="nav-item" href="billing.html"><span class="nav-icon">💳</span> Billing</a>
+    <a class="nav-item" href="auth.html"><span class="nav-icon">🚪</span> Sign Out</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-info">
+      <div class="avatar">EA</div>
+      <div><div class="user-name">elamashur</div><div class="user-plan">Free Plan</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">⚙️ Bot Settings</div>
+    <button class="btn-save-all" onclick="saveSettings()">💾 Save All Settings</button>
+  </div>
+  <div class="content">
+    <div class="settings-sections">
+
+      <!-- Trading Strategy -->
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-icon">🧠</span>
+          <div class="section-title">Trading Strategy</div>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label class="field-label">Market Type</label>
+            <select><option>Futures (Linear)</option><option>Spot</option><option>Both</option></select>
+            <div class="field-desc">Futures allows leverage trading</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Leverage</label>
+            <select><option>1x (No leverage)</option><option>2x</option><option selected>3x (Recommended)</option><option>5x</option><option>10x (High risk)</option></select>
+            <div class="field-desc">Higher leverage = higher risk</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Candle Timeframe</label>
+            <select><option>15 minutes</option><option selected>1 hour</option><option>4 hours</option><option>1 day</option></select>
+          </div>
+          <div class="field">
+            <label class="field-label">Scan Interval (seconds)</label>
+            <input type="number" value="60" min="30" max="300">
+            <div class="field-desc">How often bot checks market</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Market Bias</label>
+            <select><option selected>BUY (Current: Fear market)</option><option>SELL</option><option>NEUTRAL</option></select>
+            <div class="field-desc">Bias towards buy or sell signals</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Min Signal Score (1-6)</label>
+            <input type="number" value="1" min="1" max="6">
+            <div class="field-desc">Higher = fewer but stronger signals</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Management -->
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-icon">🛡️</span>
+          <div class="section-title">Risk Management</div>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label class="field-label">Risk Per Trade (%)</label>
+            <input type="number" value="2" min="0.5" max="10" step="0.5">
+            <div class="field-desc">% of balance risked per trade</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Take Profit 1 (%)</label>
+            <input type="number" value="2" min="0.5" max="20" step="0.5">
+            <div class="field-desc">First profit target</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Take Profit 2 (%)</label>
+            <input type="number" value="4" min="1" max="50" step="0.5">
+            <div class="field-desc">Final profit target</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Stop Loss (%)</label>
+            <input type="number" value="1" min="0.5" max="10" step="0.5">
+            <div class="field-desc">Maximum loss per trade</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Max Daily Loss (%)</label>
+            <input type="number" value="5" min="1" max="20" step="1">
+            <div class="field-desc">Bot stops if this loss is reached</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Max Trades Per Day</label>
+            <input type="number" value="30" min="1" max="100">
+            <div class="field-desc">Daily trade limit</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Min Balance ($)</label>
+            <input type="number" value="50" min="10" max="1000">
+            <div class="field-desc">Bot stops if balance drops below this</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Max Loss Streak</label>
+            <input type="number" value="3" min="1" max="10">
+            <div class="field-desc">Alert after this many consecutive losses</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indicator Settings -->
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-icon">📊</span>
+          <div class="section-title">Indicator Settings</div>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label class="field-label">RSI Period</label>
+            <input type="number" value="14" min="5" max="30">
+          </div>
+          <div class="field">
+            <label class="field-label">RSI Oversold (BUY trigger)</label>
+            <input type="number" value="45" min="20" max="50">
+          </div>
+          <div class="field">
+            <label class="field-label">RSI Overbought (SELL trigger)</label>
+            <input type="number" value="55" min="50" max="80">
+          </div>
+          <div class="field">
+            <label class="field-label">MACD Fast Period</label>
+            <input type="number" value="12" min="5" max="20">
+          </div>
+          <div class="field">
+            <label class="field-label">MACD Slow Period</label>
+            <input type="number" value="26" min="15" max="50">
+          </div>
+          <div class="field">
+            <label class="field-label">Bollinger Bands Period</label>
+            <input type="number" value="20" min="10" max="50">
+          </div>
+        </div>
+      </div>
+
+      <!-- Coins Selection -->
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-icon">🪙</span>
+          <div class="section-title">Coins to Trade</div>
+        </div>
+        <div class="coins-section">
+          <div style="font-size:0.82rem;color:var(--muted);font-weight:300">Click to enable/disable each coin. Free plan: max 3 coins.</div>
+          <div class="coins-grid" id="coins-grid"></div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-icon">🔔</span>
+          <div class="section-title">Notifications</div>
+        </div>
+        <div class="section-body full">
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Trade notifications</div><div class="td">Get notified for every BUY/SELL order placed</div></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Hourly reports</div><div class="td">Receive hourly bot status on Telegram</div></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Daily P&L report</div><div class="td">Daily profit/loss summary at midnight</div></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Weekly report</div><div class="td">Weekly performance summary every Sunday</div></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Loss streak alerts</div><div class="td">Alert when consecutive losses exceed limit</div></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+          <div class="toggle-row"><div class="toggle-info"><div class="tl">Daily loss limit alert</div><div class="td">Alert when daily loss limit is reached</div></div><div class="toggle" onclick="this.classList.toggle('off')"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span>✅</span><span id="toast-msg">Settings saved!</span></div>
+
+<script>
+  const coins = [
+    {sym:'BTC',risk:'low'},{sym:'ETH',risk:'low'},{sym:'BNB',risk:'low'},
+    {sym:'SOL',risk:'med'},{sym:'XRP',risk:'med'},{sym:'ADA',risk:'med'},
+    {sym:'DOGE',risk:'med'},{sym:'DOT',risk:'med'},{sym:'AVAX',risk:'high'},
+    {sym:'LINK',risk:'high'},{sym:'TRUMP',risk:'high'},
+  ];
+  const active = ['BTC','ETH','SOL'];
+  const grid = document.getElementById('coins-grid');
+  grid.innerHTML = coins.map(c => `
+    <div class="coin-toggle ${active.includes(c.sym)?'active':''}" onclick="this.classList.toggle('active')">
+      <div class="coin-sym">${c.sym}</div>
+      <div class="coin-risk risk-${c.risk}">${c.risk==='low'?'Safe':c.risk==='med'?'Medium':'High'}</div>
+      ${active.includes(c.sym)?'<div class="check">✓ Active</div>':''}
+    </div>`).join('');
+
+  function saveSettings() {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'),3000);
+  }
+</script>
+</body>
+</html>

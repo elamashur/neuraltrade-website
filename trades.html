@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuralTrade AI — Trade History</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root { --gold:#F5C842; --navy:#050D1A; --navy2:#0A1628; --navy3:#0F1F3D; --white:#F0F4FF; --muted:#7A8BAA; --border:rgba(245,200,66,0.12); --card:rgba(10,22,40,0.95); --success:#22c55e; --danger:#ef4444; --sidebar-w:240px; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--navy); color:var(--white); font-family:'DM Sans',sans-serif; display:flex; min-height:100vh; font-size:14px; }
+  .sidebar { width:var(--sidebar-w); min-height:100vh; background:var(--navy2); border-right:1px solid var(--border); display:flex; flex-direction:column; position:fixed; top:0; left:0; z-index:50; }
+  .sidebar-logo { padding:1.5rem 1.25rem; border-bottom:1px solid var(--border); }
+  .logo-text { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; color:var(--white); text-decoration:none; }
+  .logo-text span { color:var(--gold); }
+  .nav-section { padding:0.5rem 1.25rem 0.25rem; font-size:0.65rem; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; font-weight:600; margin-top:0.5rem; }
+  .nav-item { display:flex; align-items:center; gap:0.75rem; padding:0.65rem 1.25rem; color:var(--muted); text-decoration:none; font-size:0.875rem; font-weight:500; transition:all 0.2s; }
+  .nav-item:hover { color:var(--white); background:rgba(255,255,255,0.04); }
+  .nav-item.active { color:var(--gold); background:rgba(245,200,66,0.08); border-right:2px solid var(--gold); }
+  .nav-icon { font-size:16px; width:20px; text-align:center; }
+  .sidebar-bottom { padding:1rem 1.25rem; border-top:1px solid var(--border); margin-top:auto; }
+  .avatar { width:36px; height:36px; border-radius:50%; background:rgba(245,200,66,0.15); border:1px solid rgba(245,200,66,0.3); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; color:var(--gold); }
+  .user-info { display:flex; align-items:center; gap:0.75rem; }
+  .user-name { font-size:0.85rem; font-weight:500; }
+  .user-plan { font-size:0.7rem; color:var(--muted); }
+  .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; }
+  .topbar { padding:1rem 2rem; border-bottom:1px solid var(--border); background:var(--navy2); display:flex; align-items:center; justify-content:space-between; }
+  .topbar-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; }
+  .btn-export { padding:0.45rem 0.9rem; background:transparent; border:1px solid var(--border); border-radius:8px; color:var(--muted); font-size:0.8rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+  .btn-export:hover { border-color:var(--gold); color:var(--gold); }
+  .content { padding:1.5rem 2rem; }
+  .stats-row { display:grid; grid-template-columns:repeat(5,1fr); gap:1rem; margin-bottom:1.5rem; }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1rem; }
+  .stat-label { font-size:0.72rem; color:var(--muted); margin-bottom:0.4rem; }
+  .stat-value { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:700; }
+  .stat-value.up { color:var(--success); }
+  .stat-value.down { color:var(--danger); }
+  .chart-card { background:var(--card); border:1px solid var(--border); border-radius:14px; margin-bottom:1.5rem; }
+  .chart-header { padding:1rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .chart-title { font-family:'Syne',sans-serif; font-size:0.9rem; font-weight:700; }
+  .chart-tabs { display:flex; gap:0.5rem; }
+  .chart-tab { padding:0.3rem 0.7rem; border-radius:6px; font-size:0.75rem; font-weight:600; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--muted); font-family:'Syne',sans-serif; transition:all 0.2s; }
+  .chart-tab.active { background:var(--gold); color:var(--navy); border-color:var(--gold); }
+  .chart-body { padding:1rem 1.25rem; height:200px; }
+  .filters { display:flex; gap:0.75rem; margin-bottom:1rem; flex-wrap:wrap; }
+  .filter-select { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:0.45rem 0.8rem; color:var(--white); font-family:'DM Sans',sans-serif; font-size:0.82rem; outline:none; cursor:pointer; }
+  .filter-select:focus { border-color:rgba(245,200,66,0.3); }
+  .filter-select option { background:var(--navy2); }
+  .table-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .trade-table { width:100%; border-collapse:collapse; }
+  .trade-table th { font-size:0.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; padding:0.75rem 1rem; text-align:left; border-bottom:1px solid var(--border); font-weight:600; background:rgba(255,255,255,0.02); }
+  .trade-table td { padding:0.75rem 1rem; font-size:0.82rem; border-bottom:1px solid rgba(255,255,255,0.03); }
+  .trade-table tr:last-child td { border-bottom:none; }
+  .trade-table tr:hover td { background:rgba(255,255,255,0.02); }
+  .side-badge { display:inline-flex; align-items:center; gap:0.3rem; padding:0.2rem 0.6rem; border-radius:6px; font-size:0.72rem; font-weight:600; }
+  .side-buy { background:rgba(34,197,94,0.1); color:var(--success); border:1px solid rgba(34,197,94,0.2); }
+  .side-sell { background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.2); }
+  .pnl-pos { color:var(--success); font-weight:500; }
+  .pnl-neg { color:var(--danger); font-weight:500; }
+  .pagination { display:flex; align-items:center; justify-content:center; gap:0.5rem; padding:1rem; border-top:1px solid var(--border); }
+  .page-btn { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:0.82rem; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--muted); transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+  .page-btn.active { background:var(--gold); color:var(--navy); border-color:var(--gold); font-weight:700; }
+  .page-btn:hover:not(.active) { border-color:var(--gold); color:var(--gold); }
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><a href="index.html" class="logo-text">Neural<span>Trade</span> AI</a></div>
+  <nav style="padding:1rem 0;flex:1;">
+    <div class="nav-section">Main</div>
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+    <a class="nav-item active" href="trades.html"><span class="nav-icon">📈</span> Trade History</a>
+    <div class="nav-section">Bot</div>
+    <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span> Bot Settings</a>
+    <a class="nav-item" href="apikeys.html"><span class="nav-icon">🔑</span> API Keys</a>
+    <div class="nav-section">Account</div>
+    <a class="nav-item" href="billing.html"><span class="nav-icon">💳</span> Billing</a>
+    <a class="nav-item" href="auth.html"><span class="nav-icon">🚪</span> Sign Out</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-info"><div class="avatar">EA</div><div><div class="user-name">elamashur</div><div class="user-plan">Free Plan</div></div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">📈 Trade History</div>
+    <button class="btn-export" onclick="alert('Export to CSV coming soon!')">📥 Export CSV</button>
+  </div>
+  <div class="content">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total Trades</div><div class="stat-value">24</div></div>
+      <div class="stat-card"><div class="stat-label">Win Rate</div><div class="stat-value up">68%</div></div>
+      <div class="stat-card"><div class="stat-label">Total P&L</div><div class="stat-value up">+$28.83</div></div>
+      <div class="stat-card"><div class="stat-label">Best Trade</div><div class="stat-value up">+$12.40</div></div>
+      <div class="stat-card"><div class="stat-label">Worst Trade</div><div class="stat-value down">-$4.20</div></div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">Cumulative P&L</div>
+        <div class="chart-tabs">
+          <button class="chart-tab active">7D</button>
+          <button class="chart-tab">1M</button>
+          <button class="chart-tab">All</button>
+        </div>
+      </div>
+      <div class="chart-body"><canvas id="pnlChart"></canvas></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters">
+      <select class="filter-select"><option>All Coins</option><option>BTCUSDT</option><option>ETHUSDT</option><option>SOLUSDT</option></select>
+      <select class="filter-select"><option>All Sides</option><option>BUY</option><option>SELL</option></select>
+      <select class="filter-select"><option>All Results</option><option>Profit</option><option>Loss</option></select>
+      <select class="filter-select"><option>Last 7 days</option><option>Last 30 days</option><option>All time</option></select>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <table class="trade-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Date & Time</th><th>Coin</th><th>Side</th>
+            <th>Entry Price</th><th>Exit Price</th><th>Qty</th>
+            <th>P&L</th><th>P&L %</th><th>Duration</th>
+          </tr>
+        </thead>
+        <tbody id="trades-body"></tbody>
+      </table>
+      <div class="pagination">
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const trades = [
+    {id:1,date:'2026-03-23 14:08',coin:'SOLUSDT',side:'BUY',entry:'86.50',exit:'89.09',qty:'2.3',pnl:'+$5.96',pnlp:'+3%',dur:'2h 14m'},
+    {id:2,date:'2026-03-23 12:08',coin:'ETHUSDT',side:'SELL',entry:'2405.60',exit:'2381.54',qty:'0.08',pnl:'+$1.92',pnlp:'+1%',dur:'1h 32m'},
+    {id:3,date:'2026-03-23 12:08',coin:'BTCUSDT',side:'SELL',entry:'316442',exit:'313277',qty:'0.001',pnl:'+$3.17',pnlp:'+1%',dur:'3h 05m'},
+    {id:4,date:'2026-03-22 20:45',coin:'SOLUSDT',side:'BUY',entry:'85.20',exit:'87.76',qty:'2.3',pnl:'+$5.89',pnlp:'+3%',dur:'4h 20m'},
+    {id:5,date:'2026-03-22 18:30',coin:'BTCUSDT',side:'BUY',entry:'82100',exit:'81279',qty:'0.001',pnl:'-$0.82',pnlp:'-1%',dur:'0h 45m'},
+    {id:6,date:'2026-03-22 15:12',coin:'ETHUSDT',side:'BUY',entry:'2341',exit:'2388',qty:'0.08',pnl:'+$3.76',pnlp:'+2%',dur:'5h 10m'},
+    {id:7,date:'2026-03-21 22:00',coin:'SOLUSDT',side:'SELL',entry:'91.20',exit:'91.20',qty:'2.3',pnl:'-$4.20',pnlp:'-2%',dur:'0h 30m'},
+    {id:8,date:'2026-03-21 19:45',coin:'BTCUSDT',side:'BUY',entry:'79500',exit:'82200',qty:'0.001',pnl:'+$2.70',pnlp:'+3%',dur:'6h 15m'},
+  ];
+
+  document.getElementById('trades-body').innerHTML = trades.map(t => `
+    <tr>
+      <td style="color:var(--muted)">#${t.id}</td>
+      <td style="color:var(--muted);font-size:0.78rem">${t.date}</td>
+      <td style="font-weight:500">${t.coin}</td>
+      <td><span class="side-badge ${t.side==='BUY'?'side-buy':'side-sell'}">${t.side}</span></td>
+      <td>$${t.entry}</td>
+      <td>$${t.exit}</td>
+      <td style="color:var(--muted)">${t.qty}</td>
+      <td class="${t.pnl.startsWith('+')?'pnl-pos':'pnl-neg'}">${t.pnl}</td>
+      <td class="${t.pnlp.startsWith('+')?'pnl-pos':'pnl-neg'}">${t.pnlp}</td>
+      <td style="color:var(--muted)">${t.dur}</td>
+    </tr>`).join('');
+
+  // Chart
+  const ctx = document.getElementById('pnlChart').getContext('2d');
+  new Chart(ctx, {
+    type:'line',
+    data:{
+      labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets:[{
+        label:'P&L',
+        data:[0,3.5,2.1,8.4,6.2,15.8,28.83],
+        borderColor:'#F5C842',
+        backgroundColor:'rgba(245,200,66,0.08)',
+        borderWidth:2,fill:true,tension:0.4,
+        pointBackgroundColor:'#F5C842',pointRadius:4,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#0A1628',borderColor:'rgba(245,200,66,0.2)',borderWidth:1,bodyColor:'#F5C842',callbacks:{label:c=>`$${c.raw}`}}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#7A8BAA',font:{size:11}}},
+        y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#7A8BAA',font:{size:11},callback:v=>`$${v}`}}
+      }
+    }
+  });
+
+  document.querySelectorAll('.chart-tab').forEach(t => t.addEventListener('click', function(){
+    document.querySelectorAll('.chart-tab').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+  }));
+</script>
+</body>
+</html>
