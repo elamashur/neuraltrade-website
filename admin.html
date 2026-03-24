@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeuralTrade AI — Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0a0a0f; color: #fff; min-height: 100vh; }
+
+    /* LOGIN SCREEN */
+    #login-screen {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+    .login-card {
+      background: #12121a; border: 1px solid #2a2a3a; border-radius: 16px;
+      padding: 36px; max-width: 380px; width: 100%; text-align: center;
+    }
+    .login-card h1 { font-size: 20px; color: #f5c842; margin-bottom: 6px; }
+    .login-card p  { font-size: 13px; color: #888; margin-bottom: 24px; }
+    .login-card input {
+      width: 100%; padding: 12px 14px; background: #0a0a0f;
+      border: 1px solid #2a2a3a; border-radius: 10px; color: #fff;
+      font-size: 14px; outline: none; margin-bottom: 12px; text-align: center; letter-spacing: 3px;
+    }
+    .login-card input:focus { border-color: #f5c842; }
+    .btn-login {
+      width: 100%; padding: 13px; background: #f5c842; color: #0a0a0f;
+      border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    .login-error { color: #f07070; font-size: 13px; margin-top: 12px; display: none; }
+
+    /* NAV */
+    nav {
+      background: #12121a; border-bottom: 1px solid #2a2a3a;
+      padding: 0 24px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { font-size: 16px; font-weight: 700; color: #f5c842; }
+    .nav-badge { font-size: 11px; background: #2e0a0a; color: #f07070; border: 1px solid #4a1a1a; padding: 3px 10px; border-radius: 20px; margin-left: 10px; }
+    .btn-logout { padding: 7px 14px; background: transparent; border: 1px solid #2a2a3a; border-radius: 8px; color: #aaa; font-size: 12px; cursor: pointer; }
+    .btn-logout:hover { border-color: #f07070; color: #f07070; }
+
+    /* MAIN */
+    .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+    /* STAT CARDS */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .stat { background: #12121a; border: 1px solid #2a2a3a; border-radius: 14px; padding: 18px; }
+    .stat-label { font-size: 11px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 28px; font-weight: 700; color: #f5c842; }
+    .stat-sub   { font-size: 11px; color: #555; margin-top: 4px; }
+
+    /* SECTION */
+    .section-title { font-size: 14px; font-weight: 600; color: #ccc; margin-bottom: 14px; }
+
+    /* TABLE */
+    .table-wrap { background: #12121a; border: 1px solid #2a2a3a; border-radius: 14px; overflow: hidden; margin-bottom: 28px; }
+    .table-header { padding: 14px 20px; border-bottom: 1px solid #2a2a3a; display: flex; align-items: center; justify-content: space-between; }
+    .table-header span { font-size: 13px; font-weight: 500; color: #ccc; }
+    .search-input {
+      padding: 7px 12px; background: #0a0a0f; border: 1px solid #2a2a3a;
+      border-radius: 8px; color: #fff; font-size: 12px; outline: none; width: 200px;
+    }
+    .search-input:focus { border-color: #f5c842; }
+    table { width: 100%; border-collapse: collapse; }
+    th { padding: 11px 16px; font-size: 11px; color: #666; font-weight: 500; text-align: left; border-bottom: 1px solid #2a2a3a; }
+    td { padding: 12px 16px; font-size: 12px; color: #ccc; border-bottom: 1px solid #1a1a25; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #16161f; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .badge-free    { background: #1a1a2a; color: #888; border: 1px solid #2a2a3a; }
+    .badge-pro     { background: #2e2a0a; color: #f5c842; border: 1px solid #4a3a0a; }
+    .badge-active  { background: #0f2e1a; color: #4caf76; border: 1px solid #1a4a2a; }
+
+    /* BOT STATUS */
+    .bot-panel { background: #12121a; border: 1px solid #2a2a3a; border-radius: 14px; padding: 20px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf76; display: inline-block; margin-right: 8px; box-shadow: 0 0 6px #4caf76; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+    .bot-info { font-size: 14px; font-weight: 500; }
+    .bot-meta { font-size: 12px; color: #666; margin-top: 3px; }
+
+    /* EMAIL TOOL */
+    .email-panel { background: #12121a; border: 1px solid #2a2a3a; border-radius: 14px; padding: 20px; margin-bottom: 28px; }
+    .email-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .email-row input, .email-row select {
+      flex: 1; min-width: 140px; padding: 10px 12px; background: #0a0a0f;
+      border: 1px solid #2a2a3a; border-radius: 8px; color: #fff; font-size: 12px; outline: none;
+    }
+    .email-row input:focus, .email-row select:focus { border-color: #f5c842; }
+    .email-row select option { background: #12121a; }
+    .btn-send { padding: 10px 20px; background: #f5c842; color: #0a0a0f; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+    .email-result { margin-top: 10px; font-size: 12px; padding: 8px 12px; border-radius: 8px; display: none; }
+    .email-result.success { background: #0f2e1a; color: #4caf76; }
+    .email-result.error   { background: #2e0f0f; color: #f07070; }
+
+    #admin-panel { display: none; }
+    .loading-row td { text-align: center; color: #555; padding: 24px; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>🔐 Admin Access</h1>
+    <p>NeuralTrade AI — Admin Only</p>
+    <input type="password" id="admin-pass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')checkPassword()" />
+    <button class="btn-login" onclick="checkPassword()">Enter Admin Panel</button>
+    <div class="login-error" id="login-error">Wrong password. Try again.</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <nav>
+    <div style="display:flex;align-items:center">
+      <span class="nav-logo">NeuralTrade AI</span>
+      <span class="nav-badge">ADMIN</span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Lock Panel</button>
+  </nav>
+
+  <div class="main">
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Total Users</div>
+        <div class="stat-value" id="stat-users">—</div>
+        <div class="stat-sub">Registered accounts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Pro Users</div>
+        <div class="stat-value" id="stat-pro">—</div>
+        <div class="stat-sub">Paying subscribers</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Monthly Revenue</div>
+        <div class="stat-value" id="stat-revenue">—</div>
+        <div class="stat-sub">Est. MRR</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Bot Status</div>
+        <div class="stat-value" style="color:#4caf76;font-size:16px;padding-top:4px">● ACTIVE</div>
+        <div class="stat-sub">v5.0 on Railway</div>
+      </div>
+    </div>
+
+    <!-- Bot Status -->
+    <p class="section-title">Live Bot</p>
+    <div class="bot-panel">
+      <div>
+        <div class="bot-info"><span class="status-dot"></span>NeuralTrade Bot v5.0</div>
+        <div class="bot-meta">Railway · AWS ap-southeast-1 · NANO · Bybit Connected</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <span class="badge badge-active">● RUNNING</span>
+        <span class="badge badge-pro">Bybit API</span>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <p class="section-title">All Users</p>
+    <div class="table-wrap">
+      <div class="table-header">
+        <span id="user-count-label">Loading users...</span>
+        <input class="search-input" type="text" placeholder="Search by email..." oninput="filterUsers(this.value)" />
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Plan</th>
+            <th>Joined</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr class="loading-row"><td colspan="6">Loading users from Supabase...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Quick Email Tool -->
+    <p class="section-title">Send Email to User</p>
+    <div class="email-panel">
+      <div class="email-row">
+        <input type="email" id="em-to" placeholder="Recipient email" />
+        <input type="text"  id="em-name" placeholder="Recipient name" />
+        <select id="em-type">
+          <option value="welcome">Welcome email</option>
+          <option value="upgrade">Upgrade confirmation</option>
+          <option value="custom">Custom message</option>
+        </select>
+        <button class="btn-send" id="em-btn" onclick="sendAdminEmail()">Send →</button>
+      </div>
+      <div id="em-result" class="email-result"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://ctzvwqsfwqffllelpyai.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_5E9NSQb9WV4QoOKnRhMpoQ_ddA7tM2W';
+  const RESEND_KEY   = 're_Vt2t1wGe_6i5vrCgroRjKov4HDLv4dwvg';
+  const ADMIN_PASSWORD = 'NeuralAdmin2026';
+
+  const { createClient } = supabase;
+  const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let allUsers = [];
+
+  function checkPassword() {
+    const val = document.getElementById('admin-pass').value;
+    if (val === ADMIN_PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      loadDashboard();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('admin-pass').value = '';
+    }
+  }
+
+  function logout() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('admin-pass').value = '';
+  }
+
+  async function loadDashboard() {
+    try {
+      const { data, error } = await _supabase.from('users').select('*').order('created_at', { ascending: false });
+
+      if (error || !data) {
+        // Fallback: try auth.users via RPC or show message
+        document.getElementById('users-tbody').innerHTML = `<tr class="loading-row"><td colspan="6" style="color:#f5c842">Connect Supabase user table to see users. See instructions below.</td></tr>`;
+        document.getElementById('stat-users').textContent = '—';
+        document.getElementById('stat-pro').textContent = '0';
+        document.getElementById('stat-revenue').textContent = '$0';
+        document.getElementById('user-count-label').textContent = 'Set up users table in Supabase to see data';
+        return;
+      }
+
+      allUsers = data;
+      renderUsers(data);
+
+      const proCount = data.filter(u => u.plan === 'pro').length;
+      document.getElementById('stat-users').textContent = data.length;
+      document.getElementById('stat-pro').textContent = proCount;
+      document.getElementById('stat-revenue').textContent = `$${proCount * 49}`;
+      document.getElementById('user-count-label').textContent = `${data.length} users total`;
+
+    } catch(e) {
+      document.getElementById('users-tbody').innerHTML = `<tr class="loading-row"><td colspan="6" style="color:#888">Could not load users. Make sure your Supabase users table is set up.</td></tr>`;
+      document.getElementById('stat-users').textContent = '—';
+      document.getElementById('stat-pro').textContent = '—';
+      document.getElementById('stat-revenue').textContent = '—';
+    }
+  }
+
+  function renderUsers(users) {
+    if (!users.length) {
+      document.getElementById('users-tbody').innerHTML = `<tr class="loading-row"><td colspan="6">No users found.</td></tr>`;
+      return;
+    }
+    document.getElementById('users-tbody').innerHTML = users.map((u, i) => `
+      <tr>
+        <td style="color:#555">${i + 1}</td>
+        <td>${u.email || '—'}</td>
+        <td>${u.full_name || u.name || '—'}</td>
+        <td><span class="badge ${u.plan === 'pro' ? 'badge-pro' : 'badge-free'}">${u.plan || 'free'}</span></td>
+        <td>${u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</td>
+        <td><span class="badge badge-active">Active</span></td>
+      </tr>
+    `).join('');
+  }
+
+  function filterUsers(query) {
+    const filtered = allUsers.filter(u => (u.email || '').toLowerCase().includes(query.toLowerCase()));
+    renderUsers(filtered);
+  }
+
+  async function sendAdminEmail() {
+    const to   = document.getElementById('em-to').value.trim();
+    const name = document.getElementById('em-name').value.trim();
+    const type = document.getElementById('em-type').value;
+    const btn  = document.getElementById('em-btn');
+    const res  = document.getElementById('em-result');
+    if (!to || !name) { res.textContent = 'Fill in email and name.'; res.className = 'email-result error'; res.style.display = 'block'; return; }
+
+    btn.disabled = true; btn.textContent = 'Sending...';
+
+    const subjects = { welcome: `Welcome to NeuralTrade AI, ${name}! 🚀`, upgrade: `You're now on NeuralTrade Pro! 🎉`, custom: `A message from NeuralTrade AI` };
+    const bodies   = {
+      welcome: `<p style="color:#aaa;font-size:14px;line-height:1.7">Hi ${name},<br><br>Welcome to NeuralTrade AI! Your account is active. <a href="https://neuraltrade-website.vercel.app/dashboard.html" style="color:#f5c842">Go to Dashboard →</a></p>`,
+      upgrade: `<p style="color:#aaa;font-size:14px;line-height:1.7">Hi ${name},<br><br>Your Pro upgrade is confirmed! Enjoy unlimited signals and full access. <a href="https://neuraltrade-website.vercel.app/dashboard.html" style="color:#f5c842">Go to Dashboard →</a></p>`,
+      custom:  `<p style="color:#aaa;font-size:14px;line-height:1.7">Hi ${name},<br><br>This is a message from the NeuralTrade AI team.</p>`
+    };
+
+    try {
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'NeuralTrade AI <onboarding@resend.dev>',
+          to: [to],
+          subject: subjects[type],
+          html: `<!DOCTYPE html><html><body style="background:#0a0a0f;font-family:'Segoe UI',sans-serif;padding:40px"><div style="max-width:560px;margin:0 auto;background:#12121a;border-radius:16px;padding:32px;border:1px solid #2a2a3a"><h2 style="color:#f5c842;margin:0 0 20px">NeuralTrade AI</h2>${bodies[type]}</div></body></html>`
+        })
+      });
+      const d = await r.json();
+      if (r.ok) { res.textContent = `✅ Email sent! ID: ${d.id}`; res.className = 'email-result success'; }
+      else       { res.textContent = `Error: ${d.message}`; res.className = 'email-result error'; }
+    } catch(e) {
+      res.textContent = `Failed: ${e.message}`; res.className = 'email-result error';
+    }
+    res.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Send →';
+  }
+</script>
+</body>
+</html>
