@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeuralTrade AI — Email System</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a0a0f;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #12121a;
+      border: 1px solid #2a2a3a;
+      border-radius: 18px;
+      padding: 32px;
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 { font-size: 20px; font-weight: 700; color: #f5c842; margin-bottom: 6px; }
+    p  { font-size: 13px; color: #888; line-height: 1.6; margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 12px; color: #aaa; margin-bottom: 6px; }
+    input, select {
+      width: 100%;
+      padding: 11px 14px;
+      background: #0a0a0f;
+      border: 1px solid #2a2a3a;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: #f5c842; }
+    select option { background: #12121a; }
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: #f5c842;
+      color: #0a0a0f;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .result {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      display: none;
+      line-height: 1.6;
+    }
+    .result.success { background: #0f2e1a; color: #4caf76; border: 1px solid #1a4a2a; }
+    .result.error   { background: #2e0f0f; color: #f07070; border: 1px solid #4a1a1a; }
+    .divider { border-top: 1px solid #2a2a3a; margin: 24px 0; }
+    .info-box {
+      background: #0a0a0f;
+      border: 1px solid #2a2a3a;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 12px;
+      color: #888;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .info-box strong { color: #f5c842; font-weight: 500; }
+    code {
+      background: #1a1a2a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>📧 NeuralTrade Email System</h1>
+  <p>Send welcome, upgrade, and notification emails to your users via Resend.</p>
+
+  <div class="info-box">
+    <strong>Resend API:</strong> Connected ✅<br>
+    <strong>From:</strong> onboarding@resend.dev<br>
+    <strong>Provider:</strong> Resend (3,000 free emails/month)
+  </div>
+
+  <div class="form-group">
+    <label>Recipient Email</label>
+    <input type="email" id="to-email" placeholder="user@example.com" />
+  </div>
+
+  <div class="form-group">
+    <label>Recipient Name</label>
+    <input type="text" id="to-name" placeholder="John Doe" />
+  </div>
+
+  <div class="form-group">
+    <label>Email Type</label>
+    <select id="email-type">
+      <option value="welcome">Welcome email (new signup)</option>
+      <option value="upgrade">Upgrade confirmation (Pro plan)</option>
+      <option value="login">Login notification</option>
+    </select>
+  </div>
+
+  <button class="btn" id="send-btn" onclick="sendEmail()">Send Email →</button>
+  <div class="result" id="result"></div>
+
+  <div class="divider"></div>
+
+  <p style="margin-bottom:0;font-size:12px;color:#555">
+    This page is your internal email testing tool. To trigger emails automatically on signup, add the email function to <code>auth.html</code> — instructions below the send button after a successful test.
+  </p>
+</div>
+
+<script>
+  const RESEND_API_KEY = 're_Vt2t1wGe_6i5vrCgroRjKov4HDLv4dwvg';
+
+  function getEmailContent(type, name) {
+    const templates = {
+      welcome: {
+        subject: `Welcome to NeuralTrade AI, ${name}! 🚀`,
+        html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#0a0a0f;font-family:'Segoe UI',sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#12121a;border-radius:16px;overflow:hidden;border:1px solid #2a2a3a;">
+    <div style="background:#12121a;padding:32px 32px 24px;border-bottom:1px solid #2a2a3a;">
+      <h1 style="color:#f5c842;font-size:22px;margin:0 0 4px;">NeuralTrade AI</h1>
+      <p style="color:#888;font-size:13px;margin:0;">AI-Powered Crypto Trading</p>
+    </div>
+    <div style="padding:32px;">
+      <h2 style="color:#fff;font-size:20px;margin:0 0 16px;">Welcome aboard, ${name}! 👋</h2>
+      <p style="color:#aaa;font-size:14px;line-height:1.7;margin:0 0 20px;">
+        Your NeuralTrade AI account is now active. You have access to the free plan — including dashboard access, bot v5.0 status, and 3 sample signals per day.
+      </p>
+      <div style="background:#0a0a0f;border-radius:12px;padding:20px;margin:0 0 24px;">
+        <p style="color:#888;font-size:12px;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.05em;">What you get on Free</p>
+        <p style="color:#ccc;font-size:13px;margin:0 0 8px;">✅ &nbsp;Dashboard access</p>
+        <p style="color:#ccc;font-size:13px;margin:0 0 8px;">✅ &nbsp;Bot v5.0 live status</p>
+        <p style="color:#ccc;font-size:13px;margin:0;">✅ &nbsp;3 sample signals/day</p>
+      </div>
+      <a href="https://neuraltrade-website.vercel.app/dashboard.html" style="display:block;background:#f5c842;color:#0a0a0f;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:0 0 24px;">
+        Go to Dashboard →
+      </a>
+      <p style="color:#aaa;font-size:13px;line-height:1.7;margin:0 0 16px;">
+        Want unlimited signals, real-time PnL tracking, and Bot v6.0 early access? Upgrade to Pro for $49/month.
+      </p>
+      <a href="https://neuraltrade-website.vercel.app/billing.html" style="display:block;background:transparent;color:#f5c842;text-decoration:none;text-align:center;padding:13px;border-radius:10px;font-weight:700;font-size:14px;border:1px solid #f5c842;">
+        Upgrade to Pro →
+      </a>
+    </div>
+    <div style="padding:20px 32px;border-top:1px solid #2a2a3a;">
+      <p style="color:#555;font-size:12px;margin:0;text-align:center;">
+        NeuralTrade AI · neuraltrade-website.vercel.app<br>
+        You received this because you signed up for NeuralTrade AI.
+      </p>
+    </div>
+  </div>
+</body>
+</html>`
+      },
+      upgrade: {
+        subject: `You're now on NeuralTrade Pro! 🎉`,
+        html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#0a0a0f;font-family:'Segoe UI',sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#12121a;border-radius:16px;overflow:hidden;border:1px solid #2a2a3a;">
+    <div style="background:#12121a;padding:32px 32px 24px;border-bottom:1px solid #2a2a3a;">
+      <h1 style="color:#f5c842;font-size:22px;margin:0 0 4px;">NeuralTrade AI</h1>
+      <p style="color:#888;font-size:13px;margin:0;">AI-Powered Crypto Trading</p>
+    </div>
+    <div style="padding:32px;">
+      <h2 style="color:#fff;font-size:20px;margin:0 0 16px;">You're now on Pro! 🚀</h2>
+      <p style="color:#aaa;font-size:14px;line-height:1.7;margin:0 0 20px;">
+        Hi ${name}, your upgrade to NeuralTrade Pro is confirmed. You now have full access to all features.
+      </p>
+      <div style="background:#0a0a0f;border-radius:12px;padding:20px;margin:0 0 24px;">
+        <p style="color:#f5c842;font-size:12px;margin:0 0 12px;text-transform:uppercase;letter-spacing:0.05em;">Pro Plan — $49/month</p>
+        <p style="color:#ccc;font-size:13px;margin:0 0 8px;">⚡ &nbsp;Unlimited live signals</p>
+        <p style="color:#ccc;font-size:13px;margin:0 0 8px;">⚡ &nbsp;Real-time PnL tracking</p>
+        <p style="color:#ccc;font-size:13px;margin:0 0 8px;">⚡ &nbsp;Bot v6.0 early access</p>
+        <p style="color:#ccc;font-size:13px;margin:0;">⚡ &nbsp;Priority email support</p>
+      </div>
+      <a href="https://neuraltrade-website.vercel.app/dashboard.html" style="display:block;background:#f5c842;color:#0a0a0f;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;">
+        Open Dashboard →
+      </a>
+    </div>
+    <div style="padding:20px 32px;border-top:1px solid #2a2a3a;">
+      <p style="color:#555;font-size:12px;margin:0;text-align:center;">
+        NeuralTrade AI · neuraltrade-website.vercel.app<br>
+        Questions? Reply to this email anytime.
+      </p>
+    </div>
+  </div>
+</body>
+</html>`
+      },
+      login: {
+        subject: `New login to your NeuralTrade AI account`,
+        html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#0a0a0f;font-family:'Segoe UI',sans-serif;">
+  <div style="max-width:560px;margin:40px auto;background:#12121a;border-radius:16px;overflow:hidden;border:1px solid #2a2a3a;">
+    <div style="background:#12121a;padding:32px 32px 24px;border-bottom:1px solid #2a2a3a;">
+      <h1 style="color:#f5c842;font-size:22px;margin:0 0 4px;">NeuralTrade AI</h1>
+      <p style="color:#888;font-size:13px;margin:0;">Security Notification</p>
+    </div>
+    <div style="padding:32px;">
+      <h2 style="color:#fff;font-size:20px;margin:0 0 16px;">New login detected 🔐</h2>
+      <p style="color:#aaa;font-size:14px;line-height:1.7;margin:0 0 20px;">
+        Hi ${name}, a new login was detected on your NeuralTrade AI account. If this was you, no action needed.
+      </p>
+      <div style="background:#0a0a0f;border-radius:12px;padding:20px;margin:0 0 24px;">
+        <p style="color:#888;font-size:12px;margin:0 0 8px;">Time: ${new Date().toUTCString()}</p>
+        <p style="color:#888;font-size:12px;margin:0;">If you did not log in, change your password immediately.</p>
+      </div>
+      <a href="https://neuraltrade-website.vercel.app/settings.html" style="display:block;background:transparent;color:#f07070;text-decoration:none;text-align:center;padding:13px;border-radius:10px;font-weight:700;font-size:14px;border:1px solid #f07070;">
+        Secure My Account →
+      </a>
+    </div>
+    <div style="padding:20px 32px;border-top:1px solid #2a2a3a;">
+      <p style="color:#555;font-size:12px;margin:0;text-align:center;">
+        NeuralTrade AI · neuraltrade-website.vercel.app
+      </p>
+    </div>
+  </div>
+</body>
+</html>`
+      }
+    };
+    return templates[type];
+  }
+
+  async function sendEmail() {
+    const to = document.getElementById('to-email').value.trim();
+    const name = document.getElementById('to-name').value.trim();
+    const type = document.getElementById('email-type').value;
+    const btn = document.getElementById('send-btn');
+    const result = document.getElementById('result');
+
+    if (!to || !name) {
+      result.textContent = 'Please fill in email and name.';
+      result.className = 'result error';
+      result.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    result.style.display = 'none';
+
+    const { subject, html } = getEmailContent(type, name);
+
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'NeuralTrade AI <onboarding@resend.dev>',
+          to: [to],
+          subject,
+          html
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        result.innerHTML = `✅ Email sent successfully!<br><span style="font-size:11px;opacity:0.7">ID: ${data.id}</span>`;
+        result.className = 'result success';
+      } else {
+        result.textContent = `Error: ${data.message || 'Failed to send email'}`;
+        result.className = 'result error';
+      }
+    } catch (err) {
+      result.textContent = `Network error: ${err.message}`;
+      result.className = 'result error';
+    }
+
+    result.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Send Email →';
+  }
+</script>
+</body>
+</html>
