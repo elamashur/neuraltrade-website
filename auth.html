@@ -1,919 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NeuralTrade AI — Sign In</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --gold: #F5C842;
-    --gold-dim: #C9A227;
-    --navy: #050D1A;
-    --navy2: #0A1628;
-    --navy3: #0F1F3D;
-    --white: #F0F4FF;
-    --muted: #7A8BAA;
-    --card: rgba(15,31,61,0.9);
-    --border: rgba(245,200,66,0.15);
-    --success: #22c55e;
-    --error: #ef4444;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    background: var(--navy);
-    color: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  /* Background */
-  .bg-grid {
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(245,200,66,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(245,200,66,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .bg-glow {
-    position: fixed;
-    width: 500px;
-    height: 500px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(245,200,66,0.06) 0%, transparent 70%);
-    top: -100px;
-    right: -100px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .bg-glow2 {
-    position: fixed;
-    width: 400px;
-    height: 400px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(20,80,200,0.07) 0%, transparent 70%);
-    bottom: -100px;
-    left: -100px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Main container */
-  .container {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 460px;
-    padding: 1.5rem;
-    animation: fadeUp 0.5s ease both;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Logo */
-  .logo {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .logo-text {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: var(--white);
-    letter-spacing: -0.5px;
-    text-decoration: none;
-    display: inline-block;
-  }
-
-  .logo-text span { color: var(--gold); }
-
-  .logo-sub {
-    font-size: 0.8rem;
-    color: var(--muted);
-    margin-top: 0.3rem;
-  }
-
-  /* Card */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2.5rem;
-    backdrop-filter: blur(20px);
-  }
-
-  /* Tabs */
-  .tabs {
-    display: flex;
-    background: rgba(255,255,255,0.04);
-    border-radius: 12px;
-    padding: 4px;
-    margin-bottom: 2rem;
-    border: 1px solid var(--border);
-  }
-
-  .tab {
-    flex: 1;
-    padding: 0.65rem;
-    border-radius: 9px;
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    font-family: 'Syne', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .tab.active {
-    background: var(--gold);
-    color: var(--navy);
-  }
-
-  /* Forms */
-  .form { display: none; }
-  .form.active { display: block; }
-
-  .form-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
-  }
-
-  .form-sub {
-    color: var(--muted);
-    font-size: 0.875rem;
-    margin-bottom: 1.8rem;
-    font-weight: 300;
-  }
-
-  /* Input groups */
-  .input-group {
-    margin-bottom: 1.2rem;
-  }
-
-  .input-label {
-    display: block;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--muted);
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.5px;
-  }
-
-  .input-wrap {
-    position: relative;
-  }
-
-  .input-icon {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-    color: var(--muted);
-    pointer-events: none;
-  }
-
-  input {
-    width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    padding: 0.75rem 1rem 0.75rem 2.8rem;
-    color: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-    outline: none;
-  }
-
-  input::placeholder { color: rgba(122,139,170,0.6); }
-
-  input:focus {
-    border-color: rgba(245,200,66,0.4);
-    background: rgba(245,200,66,0.04);
-    box-shadow: 0 0 0 3px rgba(245,200,66,0.08);
-  }
-
-  input.error {
-    border-color: rgba(239,68,68,0.5);
-    background: rgba(239,68,68,0.04);
-  }
-
-  .input-error {
-    font-size: 0.75rem;
-    color: var(--error);
-    margin-top: 0.4rem;
-    display: none;
-  }
-
-  .input-error.show { display: block; }
-
-  /* Password toggle */
-  .toggle-pw {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 14px;
-    padding: 0;
-    transition: color 0.2s;
-  }
-
-  .toggle-pw:hover { color: var(--white); }
-
-  /* Password strength */
-  .pw-strength {
-    margin-top: 0.5rem;
-    display: none;
-  }
-
-  .pw-strength.show { display: block; }
-
-  .pw-bars {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 0.3rem;
-  }
-
-  .pw-bar {
-    flex: 1;
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(255,255,255,0.08);
-    transition: background 0.3s;
-  }
-
-  .pw-bar.weak { background: var(--error); }
-  .pw-bar.medium { background: var(--gold); }
-  .pw-bar.strong { background: var(--success); }
-
-  .pw-text {
-    font-size: 0.72rem;
-    color: var(--muted);
-  }
-
-  /* Checkbox */
-  .checkbox-group {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .checkbox-group input[type="checkbox"] {
-    width: 16px;
-    min-width: 16px;
-    height: 16px;
-    padding: 0;
-    margin-top: 2px;
-    accent-color: var(--gold);
-    cursor: pointer;
-  }
-
-  .checkbox-label {
-    font-size: 0.8rem;
-    color: var(--muted);
-    line-height: 1.5;
-    font-weight: 300;
-  }
-
-  .checkbox-label a {
-    color: var(--gold);
-    text-decoration: none;
-  }
-
-  .checkbox-label a:hover { text-decoration: underline; }
-
-  /* Submit button */
-  .btn-submit {
-    width: 100%;
-    padding: 0.875rem;
-    background: var(--gold);
-    color: var(--navy);
-    border: none;
-    border-radius: 10px;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .btn-submit:hover {
-    background: #FFD84D;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgba(245,200,66,0.25);
-  }
-
-  .btn-submit:active { transform: scale(0.98); }
-
-  .btn-submit.loading {
-    opacity: 0.8;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  /* Divider */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .divider-line {
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .divider-text {
-    font-size: 0.75rem;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  /* Social login */
-  .social-btn {
-    width: 100%;
-    padding: 0.75rem;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--white);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .social-btn:hover {
-    border-color: rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.04);
-  }
-
-  .social-icon { font-size: 16px; }
-
-  /* Forgot password */
-  .forgot {
-    text-align: right;
-    margin-bottom: 1.5rem;
-    margin-top: -0.8rem;
-  }
-
-  .forgot a {
-    font-size: 0.8rem;
-    color: var(--gold);
-    text-decoration: none;
-  }
-
-  .forgot a:hover { text-decoration: underline; }
-
-  /* Alert */
-  .alert {
-    padding: 0.75rem 1rem;
-    border-radius: 10px;
-    font-size: 0.85rem;
-    margin-bottom: 1.2rem;
-    display: none;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .alert.show { display: flex; }
-
-  .alert-success {
-    background: rgba(34,197,94,0.1);
-    border: 1px solid rgba(34,197,94,0.2);
-    color: var(--success);
-  }
-
-  .alert-error {
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.2);
-    color: var(--error);
-  }
-
-  /* Features sidebar hint */
-  .features-hint {
-    margin-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  .hint-item {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-
-  .hint-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 6px;
-    background: rgba(245,200,66,0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    flex-shrink: 0;
-  }
-
-  /* Back to home */
-  .back-home {
-    text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.8rem;
-    color: var(--muted);
-  }
-
-  .back-home a {
-    color: var(--gold);
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  .back-home a:hover { text-decoration: underline; }
-
-  /* Plan badges */
-  .plan-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    background: rgba(245,200,66,0.1);
-    border: 1px solid rgba(245,200,66,0.2);
-    color: var(--gold);
-    padding: 0.25rem 0.6rem;
-    border-radius: 100px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-  }
-
-  @media (max-width: 480px) {
-    .card { padding: 1.5rem; }
-    .container { padding: 1rem; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NeuralTrade AI — Sign In</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a0a0f;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .logo h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #f5c842;
+    }
+    .logo p {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+    }
+    .card {
+      background: #12121a;
+      border: 1px solid #2a2a3a;
+      border-radius: 16px;
+      padding: 32px;
+    }
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: #0a0a0f;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: transparent;
+      color: #888;
+      transition: all 0.2s;
+    }
+    .tab.active {
+      background: #f5c842;
+      color: #0a0a0f;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      background: #0a0a0f;
+      border: 1px solid #2a2a3a;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input:focus { border-color: #f5c842; }
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: #f5c842;
+      color: #0a0a0f;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .message {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      text-align: center;
+      display: none;
+    }
+    .message.success { background: #0f2e1a; color: #4caf76; border: 1px solid #1a4a2a; }
+    .message.error   { background: #2e0f0f; color: #f07070; border: 1px solid #4a1a1a; }
+    .divider {
+      text-align: center;
+      color: #555;
+      font-size: 12px;
+      margin: 20px 0;
+    }
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #888;
+    }
+    .back-link a { color: #f5c842; text-decoration: none; }
+  </style>
 </head>
 <body>
-
-<div class="bg-grid"></div>
-<div class="bg-glow"></div>
-<div class="bg-glow2"></div>
-
 <div class="container">
-
-  <!-- Logo -->
   <div class="logo">
-    <a href="index.html" class="logo-text">Neural<span>Trade</span> AI</a>
-    <div class="logo-sub">The AI That Trades Smarter • For Everyone</div>
+    <h1>NeuralTrade AI</h1>
+    <p>AI-Powered Crypto Trading</p>
   </div>
 
-  <!-- Card -->
   <div class="card">
-
-    <!-- Tabs -->
     <div class="tabs">
-      <button class="tab active" onclick="switchTab('login')">Sign In</button>
-      <button class="tab" onclick="switchTab('register')">Create Account</button>
+      <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+      <button class="tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
     </div>
 
-    <!-- Alert -->
-    <div class="alert alert-success" id="alert-success">
-      <span>✓</span>
-      <span id="alert-success-msg">Success!</span>
-    </div>
-    <div class="alert alert-error" id="alert-error">
-      <span>✕</span>
-      <span id="alert-error-msg">Something went wrong.</span>
-    </div>
-
-    <!-- LOGIN FORM -->
-    <div class="form active" id="form-login">
-      <div class="form-title">Welcome back! 👋</div>
-      <div class="form-sub">Sign in to your NeuralTrade AI account</div>
-
-      <div class="plan-badge">
-        🤖 AI Trading • 24/7 Active
+    <!-- Sign In Form -->
+    <div id="form-signin">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signin-email" placeholder="you@example.com" />
       </div>
-
-      <div class="input-group">
-        <label class="input-label">Email Address</label>
-        <div class="input-wrap">
-          <span class="input-icon">✉</span>
-          <input type="email" id="login-email" placeholder="you@example.com">
-        </div>
-        <div class="input-error" id="login-email-error">Please enter a valid email</div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signin-password" placeholder="••••••••" />
       </div>
-
-      <div class="input-group">
-        <label class="input-label">Password</label>
-        <div class="input-wrap">
-          <span class="input-icon">🔒</span>
-          <input type="password" id="login-password" placeholder="Enter your password">
-          <button class="toggle-pw" onclick="togglePassword('login-password', this)">👁</button>
-        </div>
-        <div class="input-error" id="login-password-error">Password is required</div>
-      </div>
-
-      <div class="forgot">
-        <a href="#" onclick="showForgot()">Forgot password?</a>
-      </div>
-
-      <button class="btn-submit" onclick="handleLogin()">
-        <span id="login-btn-text">Sign In →</span>
-      </button>
-
-      <div class="divider">
-        <div class="divider-line"></div>
-        <div class="divider-text">or continue with</div>
-        <div class="divider-line"></div>
-      </div>
-
-      <button class="social-btn" onclick="handleGoogleAuth()">
-        <span class="social-icon">G</span>
-        Continue with Google
-      </button>
-
-      <button class="social-btn" onclick="handleGithubAuth()">
-        <span class="social-icon">⌥</span>
-        Continue with GitHub
-      </button>
-
-      <div class="features-hint">
-        <div class="hint-item">
-          <div class="hint-icon">🤖</div>
-          AI-powered trading on 11+ coins
-        </div>
-        <div class="hint-item">
-          <div class="hint-icon">📱</div>
-          Telegram notifications for every trade
-        </div>
-        <div class="hint-item">
-          <div class="hint-icon">🛡️</div>
-          Advanced security & loss protection
-        </div>
-      </div>
+      <button class="btn" id="signin-btn" onclick="handleSignIn()">Sign In</button>
+      <div class="message" id="signin-msg"></div>
     </div>
 
-    <!-- REGISTER FORM -->
-    <div class="form" id="form-register">
-      <div class="form-title">Start for free! 🚀</div>
-      <div class="form-sub">Create your NeuralTrade AI account — no credit card needed</div>
-
-      <div class="input-group">
-        <label class="input-label">Full Name</label>
-        <div class="input-wrap">
-          <span class="input-icon">👤</span>
-          <input type="text" id="reg-name" placeholder="Your full name">
-        </div>
-        <div class="input-error" id="reg-name-error">Please enter your name</div>
+    <!-- Sign Up Form -->
+    <div id="form-signup" style="display:none">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Your name" />
       </div>
-
-      <div class="input-group">
-        <label class="input-label">Email Address</label>
-        <div class="input-wrap">
-          <span class="input-icon">✉</span>
-          <input type="email" id="reg-email" placeholder="you@example.com">
-        </div>
-        <div class="input-error" id="reg-email-error">Please enter a valid email</div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@example.com" />
       </div>
-
-      <div class="input-group">
-        <label class="input-label">Password</label>
-        <div class="input-wrap">
-          <span class="input-icon">🔒</span>
-          <input type="password" id="reg-password" placeholder="Create a strong password" oninput="checkPasswordStrength(this.value)">
-          <button class="toggle-pw" onclick="togglePassword('reg-password', this)">👁</button>
-        </div>
-        <div class="input-error" id="reg-password-error">Password must be at least 8 characters</div>
-        <div class="pw-strength" id="pw-strength">
-          <div class="pw-bars">
-            <div class="pw-bar" id="bar1"></div>
-            <div class="pw-bar" id="bar2"></div>
-            <div class="pw-bar" id="bar3"></div>
-            <div class="pw-bar" id="bar4"></div>
-          </div>
-          <div class="pw-text" id="pw-text">Enter a password</div>
-        </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="Min 6 characters" />
       </div>
-
-      <div class="input-group">
-        <label class="input-label">Confirm Password</label>
-        <div class="input-wrap">
-          <span class="input-icon">🔒</span>
-          <input type="password" id="reg-confirm" placeholder="Confirm your password">
-          <button class="toggle-pw" onclick="togglePassword('reg-confirm', this)">👁</button>
-        </div>
-        <div class="input-error" id="reg-confirm-error">Passwords do not match</div>
-      </div>
-
-      <div class="checkbox-group">
-        <input type="checkbox" id="terms-check">
-        <label class="checkbox-label" for="terms-check">
-          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I understand that trading involves risk.
-        </label>
-      </div>
-
-      <button class="btn-submit" onclick="handleRegister()">
-        <span id="reg-btn-text">Create Free Account →</span>
-      </button>
-
-      <div class="divider">
-        <div class="divider-line"></div>
-        <div class="divider-text">or sign up with</div>
-        <div class="divider-line"></div>
-      </div>
-
-      <button class="social-btn" onclick="handleGoogleAuth()">
-        <span class="social-icon">G</span>
-        Continue with Google
-      </button>
-
-      <button class="social-btn" onclick="handleGithubAuth()">
-        <span class="social-icon">⌥</span>
-        Continue with GitHub
-      </button>
-
-      <div class="features-hint">
-        <div class="hint-item">
-          <div class="hint-icon">✓</div>
-          Free plan — no credit card required
-        </div>
-        <div class="hint-item">
-          <div class="hint-icon">✓</div>
-          Start trading in under 5 minutes
-        </div>
-        <div class="hint-item">
-          <div class="hint-icon">✓</div>
-          Cancel or upgrade anytime
-        </div>
-      </div>
+      <button class="btn" id="signup-btn" onclick="handleSignUp()">Create Account</button>
+      <div class="message" id="signup-msg"></div>
     </div>
-
   </div>
 
-  <!-- Back to home -->
-  <div class="back-home">
-    <a href="index.html">← Back to NeuralTrade AI</a>
+  <div class="back-link">
+    <a href="index.html">← Back to home</a>
   </div>
-
 </div>
 
 <script>
-  // Tab switching
+  const SUPABASE_URL = 'https://ctzvwqsfwqffllelpyai.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_5E9NSQb9WV4QoOKnRhMpoQ_ddA7tM2W';
+  const { createClient } = supabase;
+  const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // If already logged in, go straight to dashboard
+  _supabase.auth.getSession().then(({ data }) => {
+    if (data.session) window.location.href = 'dashboard.html';
+  });
+
   function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach((t, i) => {
-      t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
-    });
-    document.getElementById('form-login').classList.toggle('active', tab === 'login');
-    document.getElementById('form-register').classList.toggle('active', tab === 'register');
-    hideAlerts();
+    document.getElementById('form-signin').style.display = tab === 'signin' ? 'block' : 'none';
+    document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
+    document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
   }
 
-  // Toggle password visibility
-  function togglePassword(id, btn) {
-    const input = document.getElementById(id);
-    if (input.type === 'password') {
-      input.type = 'text';
-      btn.textContent = '🙈';
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'message ' + type;
+    el.style.display = 'block';
+  }
+
+  async function handleSignIn() {
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
+    const btn = document.getElementById('signin-btn');
+    if (!email || !password) return showMsg('signin-msg', 'Please fill in all fields.', 'error');
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    const { error } = await _supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      showMsg('signin-msg', error.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
     } else {
-      input.type = 'password';
-      btn.textContent = '👁';
+      showMsg('signin-msg', 'Success! Redirecting...', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 1000);
     }
   }
 
-  // Password strength checker
-  function checkPasswordStrength(pw) {
-    const strength = document.getElementById('pw-strength');
-    const bars = [document.getElementById('bar1'), document.getElementById('bar2'),
-                  document.getElementById('bar3'), document.getElementById('bar4')];
-    const text = document.getElementById('pw-text');
-
-    strength.classList.add('show');
-    bars.forEach(b => b.className = 'pw-bar');
-
-    if (pw.length === 0) {
-      text.textContent = 'Enter a password';
-      return;
-    }
-
-    let score = 0;
-    if (pw.length >= 8) score++;
-    if (/[A-Z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw)) score++;
-    if (/[^A-Za-z0-9]/.test(pw)) score++;
-
-    const levels = ['weak', 'medium', 'medium', 'strong'];
-    const labels = ['Too weak', 'Could be stronger', 'Getting better!', 'Strong password!'];
-    const colors = ['#ef4444', '#F5C842', '#F5C842', '#22c55e'];
-
-    for (let i = 0; i < score; i++) {
-      bars[i].classList.add(levels[score - 1]);
-    }
-
-    text.textContent = labels[score - 1] || 'Enter a password';
-    text.style.color = colors[score - 1] || 'var(--muted)';
-  }
-
-  // Validation helpers
-  function showError(id, msg) {
-    const el = document.getElementById(id);
-    el.textContent = msg;
-    el.classList.add('show');
-    const input = el.previousElementSibling?.querySelector('input') ||
-                  document.getElementById(id.replace('-error', ''));
-    if (input) input.classList.add('error');
-  }
-
-  function clearError(id) {
-    const el = document.getElementById(id);
-    if (el) {
-      el.classList.remove('show');
-      const input = document.getElementById(id.replace('-error', ''));
-      if (input) input.classList.remove('error');
+  async function handleSignUp() {
+    const name = document.getElementById('signup-name').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    const btn = document.getElementById('signup-btn');
+    if (!name || !email || !password) return showMsg('signup-msg', 'Please fill in all fields.', 'error');
+    if (password.length < 6) return showMsg('signup-msg', 'Password must be at least 6 characters.', 'error');
+    btn.disabled = true;
+    btn.textContent = 'Creating account...';
+    const { error } = await _supabase.auth.signUp({
+      email, password,
+      options: { data: { full_name: name } }
+    });
+    if (error) {
+      showMsg('signup-msg', error.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    } else {
+      showMsg('signup-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
     }
   }
 
-  function showAlert(type, msg) {
-    hideAlerts();
-    const el = document.getElementById(`alert-${type}`);
-    document.getElementById(`alert-${type}-msg`).textContent = msg;
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 5000);
-  }
-
-  function hideAlerts() {
-    document.getElementById('alert-success').classList.remove('show');
-    document.getElementById('alert-error').classList.remove('show');
-  }
-
-  function setLoading(btnId, loading, text) {
-    const btn = document.getElementById(btnId);
-    if (btn) {
-      btn.textContent = loading ? '⏳ Please wait...' : text;
-      btn.closest('button')?.classList.toggle('loading', loading);
-    }
-  }
-
-  // Login handler
-  function handleLogin() {
-    clearError('login-email-error');
-    clearError('login-password-error');
-
-    const email = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-password').value;
-
-    let valid = true;
-
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showError('login-email-error', 'Please enter a valid email address');
-      valid = false;
-    }
-
-    if (!password) {
-      showError('login-password-error', 'Password is required');
-      valid = false;
-    }
-
-    if (!valid) return;
-
-    const btn = document.querySelector('#form-login .btn-submit');
-    const btnText = document.getElementById('login-btn-text');
-    btn.classList.add('loading');
-    btnText.textContent = '⏳ Signing in...';
-
-    // Simulate API call
-    setTimeout(() => {
-      btn.classList.remove('loading');
-      btnText.textContent = 'Sign In →';
-      // Simulate success — replace with real API call
-      showAlert('success', '✓ Signed in successfully! Redirecting to dashboard...');
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-        
-      }, 1500);
-    }, 1500);
-  }
-
-  // Register handler
-  function handleRegister() {
-    clearError('reg-name-error');
-    clearError('reg-email-error');
-    clearError('reg-password-error');
-    clearError('reg-confirm-error');
-
-    const name     = document.getElementById('reg-name').value.trim();
-    const email    = document.getElementById('reg-email').value.trim();
-    const password = document.getElementById('reg-password').value;
-    const confirm  = document.getElementById('reg-confirm').value;
-    const terms    = document.getElementById('terms-check').checked;
-
-    let valid = true;
-
-    if (!name || name.length < 2) {
-      showError('reg-name-error', 'Please enter your full name');
-      valid = false;
-    }
-
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showError('reg-email-error', 'Please enter a valid email address');
-      valid = false;
-    }
-
-    if (!password || password.length < 8) {
-      showError('reg-password-error', 'Password must be at least 8 characters');
-      valid = false;
-    }
-
-    if (password !== confirm) {
-      showError('reg-confirm-error', 'Passwords do not match');
-      valid = false;
-    }
-
-    if (!terms) {
-      showAlert('error', 'Please agree to the Terms of Service to continue');
-      valid = false;
-    }
-
-    if (!valid) return;
-
-    const btn = document.querySelector('#form-register .btn-submit');
-    const btnText = document.getElementById('reg-btn-text');
-    btn.classList.add('loading');
-    btnText.textContent = '⏳ Creating account...';
-
-    setTimeout(() => {
-      btn.classList.remove('loading');
-      btnText.textContent = 'Create Free Account →';
-      showAlert('success', `🎉 Welcome to NeuralTrade AI, ${name.split(' ')[0]}! Check your email to verify your account.`);
-    }, 2000);
-  }
-
-  // Social auth
-  function handleGoogleAuth() {
-    showAlert('success', 'Google authentication coming soon! Use email signup for now.');
-  }
-
-  function handleGithubAuth() {
-    showAlert('success', 'GitHub authentication coming soon! Use email signup for now.');
-  }
-
-  // Forgot password
-  function showForgot() {
-    const email = document.getElementById('login-email').value;
-    if (!email) {
-      showError('login-email-error', 'Enter your email first, then click forgot password');
-      return;
-    }
-    showAlert('success', `Password reset link sent to ${email}! Check your inbox.`);
-  }
-
-  // Enter key support
+  // Allow Enter key to submit
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      const loginActive = document.getElementById('form-login').classList.contains('active');
-      if (loginActive) handleLogin();
-      else handleRegister();
+      const activeForm = document.getElementById('form-signin').style.display !== 'none' ? 'signin' : 'signup';
+      activeForm === 'signin' ? handleSignIn() : handleSignUp();
     }
   });
 </script>
