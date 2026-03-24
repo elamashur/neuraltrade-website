@@ -16,113 +16,25 @@
       align-items: center;
       justify-content: center;
     }
-    .container {
-      width: 100%;
-      max-width: 420px;
-      padding: 24px;
-    }
-    .logo {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-    .logo h1 {
-      font-size: 24px;
-      font-weight: 700;
-      color: #f5c842;
-    }
-    .logo p {
-      font-size: 13px;
-      color: #888;
-      margin-top: 4px;
-    }
-    .card {
-      background: #12121a;
-      border: 1px solid #2a2a3a;
-      border-radius: 16px;
-      padding: 32px;
-    }
-    .tabs {
-      display: flex;
-      gap: 4px;
-      background: #0a0a0f;
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 28px;
-    }
-    .tab {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      background: transparent;
-      color: #888;
-      transition: all 0.2s;
-    }
-    .tab.active {
-      background: #f5c842;
-      color: #0a0a0f;
-    }
-    .form-group {
-      margin-bottom: 16px;
-    }
-    label {
-      display: block;
-      font-size: 13px;
-      color: #aaa;
-      margin-bottom: 6px;
-    }
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      background: #0a0a0f;
-      border: 1px solid #2a2a3a;
-      border-radius: 10px;
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-      transition: border 0.2s;
-    }
+    .container { width: 100%; max-width: 420px; padding: 24px; }
+    .logo { text-align: center; margin-bottom: 32px; }
+    .logo h1 { font-size: 24px; font-weight: 700; color: #f5c842; }
+    .logo p { font-size: 13px; color: #888; margin-top: 4px; }
+    .card { background: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; padding: 32px; }
+    .tabs { display: flex; gap: 4px; background: #0a0a0f; border-radius: 10px; padding: 4px; margin-bottom: 28px; }
+    .tab { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; background: transparent; color: #888; transition: all 0.2s; }
+    .tab.active { background: #f5c842; color: #0a0a0f; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; color: #aaa; margin-bottom: 6px; }
+    input { width: 100%; padding: 12px 14px; background: #0a0a0f; border: 1px solid #2a2a3a; border-radius: 10px; color: #fff; font-size: 14px; outline: none; transition: border 0.2s; }
     input:focus { border-color: #f5c842; }
-    .btn {
-      width: 100%;
-      padding: 13px;
-      background: #f5c842;
-      color: #0a0a0f;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: opacity 0.2s;
-    }
+    .btn { width: 100%; padding: 13px; background: #f5c842; color: #0a0a0f; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: opacity 0.2s; }
     .btn:hover { opacity: 0.9; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .message {
-      margin-top: 16px;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      text-align: center;
-      display: none;
-    }
+    .message { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; display: none; }
     .message.success { background: #0f2e1a; color: #4caf76; border: 1px solid #1a4a2a; }
-    .message.error   { background: #2e0f0f; color: #f07070; border: 1px solid #4a1a1a; }
-    .divider {
-      text-align: center;
-      color: #555;
-      font-size: 12px;
-      margin: 20px 0;
-    }
-    .back-link {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 13px;
-      color: #888;
-    }
+    .message.error { background: #2e0f0f; color: #f07070; border: 1px solid #4a1a1a; }
+    .back-link { text-align: center; margin-top: 20px; font-size: 13px; color: #888; }
     .back-link a { color: #f5c842; text-decoration: none; }
   </style>
 </head>
@@ -132,14 +44,11 @@
     <h1>NeuralTrade AI</h1>
     <p>AI-Powered Crypto Trading</p>
   </div>
-
   <div class="card">
     <div class="tabs">
       <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
       <button class="tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
     </div>
-
-    <!-- Sign In Form -->
     <div id="form-signin">
       <div class="form-group">
         <label>Email</label>
@@ -152,8 +61,6 @@
       <button class="btn" id="signin-btn" onclick="handleSignIn()">Sign In</button>
       <div class="message" id="signin-msg"></div>
     </div>
-
-    <!-- Sign Up Form -->
     <div id="form-signup" style="display:none">
       <div class="form-group">
         <label>Full Name</label>
@@ -171,19 +78,17 @@
       <div class="message" id="signup-msg"></div>
     </div>
   </div>
-
-  <div class="back-link">
-    <a href="index.html">← Back to home</a>
-  </div>
+  <div class="back-link"><a href="index.html">← Back to home</a></div>
 </div>
 
 <script>
   const SUPABASE_URL = 'https://ctzvwqsfwqffllelpyai.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_5E9NSQb9WV4QoOKnRhMpoQ_ddA7tM2W';
+  const RESEND_KEY   = 're_Vt2t1wGe_6i5vrCgroRjKov4HDLv4dwvg';
+
   const { createClient } = supabase;
   const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // If already logged in, go straight to dashboard
   _supabase.auth.getSession().then(({ data }) => {
     if (data.session) window.location.href = 'dashboard.html';
   });
@@ -202,18 +107,34 @@
     el.style.display = 'block';
   }
 
+  async function sendWelcomeEmail(email, name) {
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'NeuralTrade AI <onboarding@resend.dev>',
+          to: [email],
+          subject: `Welcome to NeuralTrade AI, ${name}! 🚀`,
+          html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#0a0a0f;font-family:'Segoe UI',sans-serif;"><div style="max-width:560px;margin:40px auto;background:#12121a;border-radius:16px;overflow:hidden;border:1px solid #2a2a3a;"><div style="padding:32px 32px 24px;border-bottom:1px solid #2a2a3a;"><h1 style="color:#f5c842;font-size:22px;margin:0 0 4px;">NeuralTrade AI</h1><p style="color:#888;font-size:13px;margin:0;">AI-Powered Crypto Trading</p></div><div style="padding:32px;"><h2 style="color:#fff;font-size:20px;margin:0 0 16px;">Welcome aboard, ${name}! 👋</h2><p style="color:#aaa;font-size:14px;line-height:1.7;margin:0 0 20px;">Your NeuralTrade AI account is now active. You're on the free plan — dashboard access, bot v5.0 status, and 3 sample signals per day.</p><div style="background:#0a0a0f;border-radius:12px;padding:20px;margin:0 0 24px;"><p style="color:#888;font-size:12px;margin:0 0 12px;">FREE PLAN INCLUDES</p><p style="color:#ccc;font-size:13px;margin:0 0 8px;">✅  Dashboard access</p><p style="color:#ccc;font-size:13px;margin:0 0 8px;">✅  Bot v5.0 live status</p><p style="color:#ccc;font-size:13px;margin:0;">✅  3 sample signals/day</p></div><a href="https://neuraltrade-website.vercel.app/dashboard.html" style="display:block;background:#f5c842;color:#0a0a0f;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:0 0 24px;">Go to Dashboard →</a><a href="https://neuraltrade-website.vercel.app/billing.html" style="display:block;background:transparent;color:#f5c842;text-decoration:none;text-align:center;padding:13px;border-radius:10px;font-weight:700;font-size:14px;border:1px solid #f5c842;">Upgrade to Pro — $49/month →</a></div><div style="padding:20px 32px;border-top:1px solid #2a2a3a;"><p style="color:#555;font-size:12px;margin:0;text-align:center;">NeuralTrade AI · neuraltrade-website.vercel.app</p></div></div></body></html>`
+        })
+      });
+    } catch(e) { console.log('Email error:', e); }
+  }
+
   async function handleSignIn() {
     const email = document.getElementById('signin-email').value.trim();
     const password = document.getElementById('signin-password').value;
     const btn = document.getElementById('signin-btn');
     if (!email || !password) return showMsg('signin-msg', 'Please fill in all fields.', 'error');
-    btn.disabled = true;
-    btn.textContent = 'Signing in...';
+    btn.disabled = true; btn.textContent = 'Signing in...';
     const { error } = await _supabase.auth.signInWithPassword({ email, password });
     if (error) {
       showMsg('signin-msg', error.message, 'error');
-      btn.disabled = false;
-      btn.textContent = 'Sign In';
+      btn.disabled = false; btn.textContent = 'Sign In';
     } else {
       showMsg('signin-msg', 'Success! Redirecting...', 'success');
       setTimeout(() => window.location.href = 'dashboard.html', 1000);
@@ -227,28 +148,22 @@
     const btn = document.getElementById('signup-btn');
     if (!name || !email || !password) return showMsg('signup-msg', 'Please fill in all fields.', 'error');
     if (password.length < 6) return showMsg('signup-msg', 'Password must be at least 6 characters.', 'error');
-    btn.disabled = true;
-    btn.textContent = 'Creating account...';
-    const { error } = await _supabase.auth.signUp({
-      email, password,
-      options: { data: { full_name: name } }
-    });
+    btn.disabled = true; btn.textContent = 'Creating account...';
+    const { error } = await _supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
     if (error) {
       showMsg('signup-msg', error.message, 'error');
-      btn.disabled = false;
-      btn.textContent = 'Create Account';
+      btn.disabled = false; btn.textContent = 'Create Account';
     } else {
-      showMsg('signup-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
-      btn.disabled = false;
-      btn.textContent = 'Create Account';
+      await sendWelcomeEmail(email, name);
+      showMsg('signup-msg', '🎉 Account created! Check your email for a welcome message.', 'success');
+      btn.disabled = false; btn.textContent = 'Create Account';
     }
   }
 
-  // Allow Enter key to submit
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      const activeForm = document.getElementById('form-signin').style.display !== 'none' ? 'signin' : 'signup';
-      activeForm === 'signin' ? handleSignIn() : handleSignUp();
+      const active = document.getElementById('form-signin').style.display !== 'none' ? 'signin' : 'signup';
+      active === 'signin' ? handleSignIn() : handleSignUp();
     }
   });
 </script>
