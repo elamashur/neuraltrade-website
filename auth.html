@@ -4,168 +4,276 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NeuralTrade AI — Sign In</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #0a0a0f;
       color: #fff;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 20px;
     }
-    .container { width: 100%; max-width: 420px; padding: 24px; }
-    .logo { text-align: center; margin-bottom: 32px; }
-    .logo h1 { font-size: 24px; font-weight: 700; color: #f5c842; }
-    .logo p { font-size: 13px; color: #888; margin-top: 4px; }
-    .card { background: #12121a; border: 1px solid #2a2a3a; border-radius: 16px; padding: 32px; }
-    .tabs { display: flex; gap: 4px; background: #0a0a0f; border-radius: 10px; padding: 4px; margin-bottom: 28px; }
-    .tab { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; background: transparent; color: #888; transition: all 0.2s; }
-    .tab.active { background: #f5c842; color: #0a0a0f; }
-    .form-group { margin-bottom: 16px; }
-    label { display: block; font-size: 13px; color: #aaa; margin-bottom: 6px; }
-    input { width: 100%; padding: 12px 14px; background: #0a0a0f; border: 1px solid #2a2a3a; border-radius: 10px; color: #fff; font-size: 14px; outline: none; transition: border 0.2s; }
-    input:focus { border-color: #f5c842; }
-    .btn { width: 100%; padding: 13px; background: #f5c842; color: #0a0a0f; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: opacity 0.2s; }
-    .btn:hover { opacity: 0.9; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .message { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; display: none; }
-    .message.success { background: #0f2e1a; color: #4caf76; border: 1px solid #1a4a2a; }
-    .message.error { background: #2e0f0f; color: #f07070; border: 1px solid #4a1a1a; }
-    .back-link { text-align: center; margin-top: 20px; font-size: 13px; color: #888; }
-    .back-link a { color: #f5c842; text-decoration: none; }
+    .card {
+      background: #13131a;
+      border: 1px solid #1e1e2e;
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .logo { text-align: center; margin-bottom: 28px; }
+    .logo h1 {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #00d4ff, #7b2fff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo p { color: #555; font-size: 13px; margin-top: 4px; }
+    .tabs {
+      display: flex;
+      background: #0a0a0f;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+    .tab {
+      flex: 1; padding: 10px;
+      border: none; background: transparent;
+      color: #555; border-radius: 8px;
+      cursor: pointer; font-size: 14px; font-weight: 500;
+      transition: all 0.2s;
+    }
+    .tab.active { background: #1e1e2e; color: #fff; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 12px; color: #666; margin-bottom: 6px; }
+    input {
+      width: 100%;
+      background: #0a0a0f;
+      border: 1px solid #1e1e2e;
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #00d4ff; }
+    .btn-primary {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #00d4ff, #7b2fff);
+      border: none; border-radius: 10px;
+      color: #fff; font-size: 15px; font-weight: 600;
+      cursor: pointer; margin-top: 6px;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .alert {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+      line-height: 1.5;
+    }
+    .alert.error   { background: #2a0a0a; border: 1px solid #ff4444; color: #ff8888; display: block; }
+    .alert.success { background: #0a2a1a; border: 1px solid #00cc88; color: #00ffaa; display: block; }
+    .forgot { text-align: right; margin-bottom: 14px; }
+    .forgot a { color: #00d4ff; font-size: 12px; text-decoration: none; }
+    .terms { font-size: 11px; color: #444; text-align: center; margin-top: 14px; line-height: 1.6; }
+    .terms a { color: #00d4ff; text-decoration: none; }
+    .back { text-align: center; margin-top: 20px; }
+    .back a { color: #555; font-size: 13px; text-decoration: none; }
+    .back a:hover { color: #fff; }
+    #loading-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8); z-index: 999;
+      align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+    }
+    #loading-overlay.show { display: flex; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #1e1e2e;
+      border-top-color: #00d4ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="logo">
-    <h1>NeuralTrade AI</h1>
-    <p>AI-Powered Crypto Trading</p>
-  </div>
-  <div class="card">
-    <div class="tabs">
-      <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
-      <button class="tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
-    </div>
-    <div id="form-signin">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signin-email" placeholder="you@example.com" />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="signin-password" placeholder="••••••••" />
-      </div>
-      <button class="btn" id="signin-btn" onclick="handleSignIn()">Sign In</button>
-      <div class="message" id="signin-msg"></div>
-    </div>
-    <div id="form-signup" style="display:none">
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="signup-name" placeholder="Your name" />
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signup-email" placeholder="you@example.com" />
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="signup-password" placeholder="Min 6 characters" />
-      </div>
-      <button class="btn" id="signup-btn" onclick="handleSignUp()">Create Account</button>
-      <div class="message" id="signup-msg"></div>
-    </div>
-  </div>
-  <div class="back-link"><a href="index.html">← Back to home</a></div>
+
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p style="color:#666;font-size:13px" id="loading-text">Please wait...</p>
 </div>
 
-<script>
-  const SUPABASE_URL = 'https://ctzvwqsfwqffllelpyai.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_5E9NSQb9WV4QoOKnRhMpoQ_ddA7tM2W';
-  const RESEND_KEY   = 're_Vt2t1wGe_6i5vrCgroRjKov4HDLv4dwvg';
+<div class="card">
+  <div class="logo">
+    <h1>🤖 NeuralTrade AI</h1>
+    <p>The AI That Trades Smarter For Everyone</p>
+  </div>
 
-  const { createClient } = supabase;
-  const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  <div class="tabs">
+    <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+    <button class="tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+  </div>
 
-  _supabase.auth.getSession().then(({ data }) => {
-    if (data.session) window.location.href = 'dashboard.html';
-  });
+  <div id="alert" class="alert"></div>
 
-  function switchTab(tab) {
-    document.getElementById('form-signin').style.display = tab === 'signin' ? 'block' : 'none';
-    document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none';
-    document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
-    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  <!-- SIGN IN -->
+  <div id="form-signin">
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="signin-email" placeholder="you@example.com"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="signin-password" placeholder="••••••••"/>
+    </div>
+    <div class="forgot"><a href="#" onclick="forgotPassword()">Forgot password?</a></div>
+    <button class="btn-primary" onclick="handleSignIn()">Sign In →</button>
+  </div>
+
+  <!-- SIGN UP -->
+  <div id="form-signup" style="display:none">
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="signup-name" placeholder="Your full name"/>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="signup-email" placeholder="you@example.com"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="signup-password" placeholder="Min 8 characters"/>
+    </div>
+    <button class="btn-primary" onclick="handleSignUp()">Create Free Account →</button>
+    <p class="terms">
+      By signing up you agree to our
+      <a href="/terms.html">Terms</a> and <a href="/privacy.html">Privacy Policy</a>.
+      Trading involves risk.
+    </p>
+  </div>
+
+  <div class="back"><a href="/index.html">← Back to NeuralTrade AI</a></div>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+  const supabase = createClient(
+    'https://ctzvwqsfwqffllelpyai.supabase.co',
+    'sb_publishable_5E9NSQb9WV4QoOKnRhMpoQ_ddA7tM2W'
+  )
+
+  // Already logged in? Go to dashboard
+  try {
+    const { data } = await supabase.auth.getSession()
+    if (data?.session) window.location.href = '/dashboard.html'
+  } catch(e) {}
+
+  function showAlert(msg, type) {
+    const el = document.getElementById('alert')
+    el.textContent = msg
+    el.className = 'alert ' + type
   }
 
-  function showMsg(id, text, type) {
-    const el = document.getElementById(id);
-    el.textContent = text;
-    el.className = 'message ' + type;
-    el.style.display = 'block';
+  function showLoading(show, text = 'Please wait...') {
+    document.getElementById('loading-overlay').classList.toggle('show', show)
+    document.getElementById('loading-text').textContent = text
   }
 
-  async function sendWelcomeEmail(email, name) {
+  window.switchTab = function(tab) {
+    document.getElementById('form-signin').style.display = tab === 'signin' ? 'block' : 'none'
+    document.getElementById('form-signup').style.display = tab === 'signup' ? 'block' : 'none'
+    document.getElementById('tab-signin').classList.toggle('active', tab === 'signin')
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup')
+    document.getElementById('alert').className = 'alert'
+  }
+
+  window.handleSignIn = async function() {
+    const email = document.getElementById('signin-email').value.trim()
+    const password = document.getElementById('signin-password').value
+    if (!email || !password) return showAlert('Please enter your email and password.', 'error')
+
+    showLoading(true, 'Signing you in...')
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    showLoading(false)
+
+    if (error) {
+      showAlert(error.message.includes('Invalid') ? 'Wrong email or password.' : error.message, 'error')
+    } else {
+      showLoading(true, 'Welcome back! Loading dashboard...')
+      setTimeout(() => window.location.href = '/dashboard.html', 800)
+    }
+  }
+
+  window.handleSignUp = async function() {
+    const name     = document.getElementById('signup-name').value.trim()
+    const email    = document.getElementById('signup-email').value.trim()
+    const password = document.getElementById('signup-password').value
+
+    if (!name)               return showAlert('Please enter your full name.', 'error')
+    if (!email)              return showAlert('Please enter your email.', 'error')
+    if (password.length < 8) return showAlert('Password must be at least 8 characters.', 'error')
+
+    showLoading(true, 'Creating your account...')
+
+    const { data, error } = await supabase.auth.signUp({
+      email, password,
+      options: { data: { full_name: name } }
+    })
+
+    if (error) {
+      showLoading(false)
+      return showAlert(error.message, 'error')
+    }
+
+    // Send welcome email via our API
     try {
-      await fetch('https://api.resend.com/emails', {
+      await fetch('/api/send-welcome', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${RESEND_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          from: 'NeuralTrade AI <onboarding@resend.dev>',
-          to: [email],
-          subject: `Welcome to NeuralTrade AI, ${name}! 🚀`,
-          html: `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head><body style="margin:0;padding:0;background:#0a0a0f;font-family:'Segoe UI',sans-serif;"><div style="max-width:560px;margin:40px auto;background:#12121a;border-radius:16px;overflow:hidden;border:1px solid #2a2a3a;"><div style="padding:32px 32px 24px;border-bottom:1px solid #2a2a3a;"><h1 style="color:#f5c842;font-size:22px;margin:0 0 4px;">NeuralTrade AI</h1><p style="color:#888;font-size:13px;margin:0;">AI-Powered Crypto Trading</p></div><div style="padding:32px;"><h2 style="color:#fff;font-size:20px;margin:0 0 16px;">Welcome aboard, ${name}! 👋</h2><p style="color:#aaa;font-size:14px;line-height:1.7;margin:0 0 20px;">Your NeuralTrade AI account is now active. You're on the free plan — dashboard access, bot v5.0 status, and 3 sample signals per day.</p><div style="background:#0a0a0f;border-radius:12px;padding:20px;margin:0 0 24px;"><p style="color:#888;font-size:12px;margin:0 0 12px;">FREE PLAN INCLUDES</p><p style="color:#ccc;font-size:13px;margin:0 0 8px;">✅  Dashboard access</p><p style="color:#ccc;font-size:13px;margin:0 0 8px;">✅  Bot v5.0 live status</p><p style="color:#ccc;font-size:13px;margin:0;">✅  3 sample signals/day</p></div><a href="https://neuraltrade-website.vercel.app/dashboard.html" style="display:block;background:#f5c842;color:#0a0a0f;text-decoration:none;text-align:center;padding:14px;border-radius:10px;font-weight:700;font-size:14px;margin:0 0 24px;">Go to Dashboard →</a><a href="https://neuraltrade-website.vercel.app/billing.html" style="display:block;background:transparent;color:#f5c842;text-decoration:none;text-align:center;padding:13px;border-radius:10px;font-weight:700;font-size:14px;border:1px solid #f5c842;">Upgrade to Pro — $49/month →</a></div><div style="padding:20px 32px;border-top:1px solid #2a2a3a;"><p style="color:#555;font-size:12px;margin:0;text-align:center;">NeuralTrade AI · neuraltrade-website.vercel.app</p></div></div></body></html>`
-        })
-      });
-    } catch(e) { console.log('Email error:', e); }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name })
+      })
+    } catch(e) {
+      // Email failed silently — don't block signup
+      console.log('Welcome email error:', e)
+    }
+
+    showLoading(false)
+    showAlert('🎉 Account created! Check your email to confirm, then sign in.', 'success')
+
+    // Clear form
+    document.getElementById('signup-name').value = ''
+    document.getElementById('signup-email').value = ''
+    document.getElementById('signup-password').value = ''
   }
 
-  async function handleSignIn() {
-    const email = document.getElementById('signin-email').value.trim();
-    const password = document.getElementById('signin-password').value;
-    const btn = document.getElementById('signin-btn');
-    if (!email || !password) return showMsg('signin-msg', 'Please fill in all fields.', 'error');
-    btn.disabled = true; btn.textContent = 'Signing in...';
-    const { error } = await _supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      showMsg('signin-msg', error.message, 'error');
-      btn.disabled = false; btn.textContent = 'Sign In';
-    } else {
-      showMsg('signin-msg', 'Success! Redirecting...', 'success');
-      setTimeout(() => window.location.href = 'dashboard.html', 1000);
-    }
+  window.forgotPassword = async function() {
+    const email = document.getElementById('signin-email').value.trim()
+    if (!email) return showAlert('Enter your email above first.', 'error')
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/settings.html'
+    })
+    if (error) showAlert(error.message, 'error')
+    else showAlert('Password reset email sent! Check your inbox.', 'success')
   }
 
-  async function handleSignUp() {
-    const name = document.getElementById('signup-name').value.trim();
-    const email = document.getElementById('signup-email').value.trim();
-    const password = document.getElementById('signup-password').value;
-    const btn = document.getElementById('signup-btn');
-    if (!name || !email || !password) return showMsg('signup-msg', 'Please fill in all fields.', 'error');
-    if (password.length < 6) return showMsg('signup-msg', 'Password must be at least 6 characters.', 'error');
-    btn.disabled = true; btn.textContent = 'Creating account...';
-    const { error } = await _supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
-    if (error) {
-      showMsg('signup-msg', error.message, 'error');
-      btn.disabled = false; btn.textContent = 'Create Account';
-    } else {
-      await sendWelcomeEmail(email, name);
-      showMsg('signup-msg', '🎉 Account created! Check your email for a welcome message.', 'success');
-      btn.disabled = false; btn.textContent = 'Create Account';
-    }
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const active = document.getElementById('form-signin').style.display !== 'none' ? 'signin' : 'signup';
-      active === 'signin' ? handleSignIn() : handleSignUp();
-    }
-  });
+  // Enter key support
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return
+    const signinVisible = document.getElementById('form-signin').style.display !== 'none'
+    if (signinVisible) window.handleSignIn()
+    else window.handleSignUp()
+  })
 </script>
 </body>
 </html>
