@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NeuralTrade AI — Dashboard</title>
+  <title>NeuralTrade AI — Dashboard v6.0</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,6 +13,7 @@
       color: #fff;
       min-height: 100vh;
     }
+
     /* NAV */
     nav {
       background: #12121a;
@@ -25,10 +26,7 @@
     }
     .nav-logo { font-size: 18px; font-weight: 700; color: #f5c842; }
     .nav-right { display: flex; align-items: center; gap: 16px; }
-    .user-badge {
-      font-size: 13px;
-      color: #aaa;
-    }
+    .user-badge { font-size: 13px; color: #aaa; }
     .btn-signout {
       padding: 8px 16px;
       background: transparent;
@@ -43,9 +41,7 @@
 
     /* MAIN */
     .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
-    .welcome {
-      margin-bottom: 32px;
-    }
+    .welcome { margin-bottom: 32px; }
     .welcome h2 { font-size: 22px; font-weight: 600; }
     .welcome p  { font-size: 14px; color: #888; margin-top: 4px; }
 
@@ -74,7 +70,21 @@
       font-weight: 600;
       color: #ccc;
       margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+    .refresh-btn {
+      font-size: 12px;
+      color: #555;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #666;
+      transition: color 0.2s;
+    }
+    .refresh-btn:hover { color: #f5c842; }
+
     .bot-status {
       background: #12121a;
       border: 1px solid #2a2a3a;
@@ -96,6 +106,8 @@
       box-shadow: 0 0 6px #4caf76;
       animation: pulse 2s infinite;
     }
+    .status-dot.offline { background: #f07070; box-shadow: 0 0 6px #f07070; animation: none; }
+    .status-dot.checking { background: #f5c842; box-shadow: 0 0 6px #f5c842; }
     @keyframes pulse {
       0%,100% { opacity: 1; }
       50%      { opacity: 0.4; }
@@ -108,8 +120,100 @@
       font-size: 12px;
       font-weight: 600;
     }
-    .badge-green { background: #0f2e1a; color: #4caf76; border: 1px solid #1a4a2a; }
+    .badge-green  { background: #0f2e1a; color: #4caf76; border: 1px solid #1a4a2a; }
     .badge-yellow { background: #2e2a0a; color: #f5c842; border: 1px solid #4a3a0a; }
+    .badge-red    { background: #2e0f0f; color: #f07070; border: 1px solid #4a1a1a; }
+    .badge-purple { background: #1a0f2e; color: #a78bfa; border: 1px solid #2a1a4a; }
+
+    /* RISK PANEL */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: #12121a;
+      border: 1px solid #2a2a3a;
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+    .risk-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #1a1a25;
+      font-size: 13px;
+    }
+    .risk-row:last-child { border-bottom: none; }
+    .risk-key { color: #777; }
+    .risk-val { font-weight: 600; }
+
+    .bar-wrap {
+      width: 100%;
+      height: 4px;
+      background: #1a1a25;
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.6s;
+    }
+
+    /* COINS GRID */
+    .coins-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .coin-card {
+      background: #12121a;
+      border: 1px solid #2a2a3a;
+      border-radius: 10px;
+      padding: 14px;
+      transition: border-color 0.2s;
+    }
+    .coin-card:hover { border-color: #f5c842; }
+    .coin-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .coin-name { font-weight: 700; font-size: 14px; }
+    .coin-regime {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .regime-BULL     { background: rgba(76,175,118,0.2); color: #4caf76; }
+    .regime-BEAR     { background: rgba(240,112,112,0.2); color: #f07070; }
+    .regime-SIDEWAYS { background: rgba(245,200,66,0.2); color: #f5c842; }
+    .regime-VOLATILE { background: rgba(167,139,250,0.2); color: #a78bfa; }
+    .regime-MIXED    { background: #1a1a25; color: #666; }
+    .coin-signal { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .signal-BUY  { color: #4caf76; }
+    .signal-SELL { color: #f07070; }
+    .signal-HOLD { color: #666; }
+    .coin-conf { font-size: 11px; color: #555; margin-bottom: 6px; }
+    .conf-bar { height: 3px; background: #1a1a25; border-radius: 2px; overflow: hidden; }
+    .conf-fill { height: 100%; background: #f5c842; border-radius: 2px; }
 
     /* TRADE TABLE */
     .table-wrap {
@@ -137,18 +241,6 @@
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: #16161f; }
 
-    /* COMING SOON PANEL */
-    .coming-soon {
-      background: #12121a;
-      border: 1px solid #2a2a3a;
-      border-radius: 14px;
-      padding: 28px;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    .coming-soon h3 { font-size: 16px; color: #f5c842; margin-bottom: 8px; }
-    .coming-soon p  { font-size: 13px; color: #666; }
-
     /* UPGRADE BANNER */
     .upgrade-banner {
       background: linear-gradient(135deg, #1a1400, #2a2000);
@@ -160,6 +252,7 @@
       justify-content: space-between;
       gap: 16px;
       flex-wrap: wrap;
+      margin-bottom: 24px;
     }
     .upgrade-banner h3 { font-size: 15px; font-weight: 600; color: #f5c842; }
     .upgrade-banner p  { font-size: 13px; color: #888; margin-top: 2px; }
@@ -176,17 +269,13 @@
     }
     .btn-upgrade:hover { opacity: 0.9; }
 
-    /* LOADING */
+    /* EMPTY + LOADING */
+    .empty { text-align: center; padding: 32px; color: #555; font-size: 13px; }
     #loading {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       background: #0a0a0f;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      flex-direction: column;
-      gap: 12px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999; flex-direction: column; gap: 12px;
     }
     .spinner {
       width: 32px; height: 32px;
@@ -200,13 +289,11 @@
 </head>
 <body>
 
-<!-- Loading screen -->
 <div id="loading">
   <div class="spinner"></div>
   <p style="font-size:13px;color:#666">Loading dashboard...</p>
 </div>
 
-<!-- Nav -->
 <nav>
   <div class="nav-logo">NeuralTrade AI</div>
   <div class="nav-right">
@@ -215,101 +302,135 @@
   </div>
 </nav>
 
-<!-- Main content -->
 <div class="main" id="main-content" style="display:none">
 
   <div class="welcome">
     <h2>Welcome back, <span id="user-name">Trader</span> 👋</h2>
-    <p>Here's your NeuralTrade AI overview — Bot v5.0 is live.</p>
+    <p id="welcome-sub">Loading your NeuralTrade AI v6.0 overview...</p>
   </div>
 
-  <!-- Stats -->
+  <!-- STATS -->
   <div class="stats">
     <div class="stat-card">
       <div class="stat-label">Bot Version</div>
-      <div class="stat-value">v5.0</div>
-      <div class="stat-sub">v6.0 coming soon</div>
+      <div class="stat-value">v6.0</div>
+      <div class="stat-sub">AI Brain Active</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Bot Status</div>
-      <div class="stat-value stat-green">ACTIVE</div>
-      <div class="stat-sub">Running on Railway</div>
+      <div class="stat-value stat-green" id="stat-status">Checking...</div>
+      <div class="stat-sub" id="stat-status-sub">Connecting to Railway</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Exchange</div>
-      <div class="stat-value" style="font-size:20px">Bybit</div>
-      <div class="stat-sub">ap-southeast-1</div>
+      <div class="stat-label">Total Trades</div>
+      <div class="stat-value" id="stat-trades">—</div>
+      <div class="stat-sub">All time</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Your Plan</div>
-      <div class="stat-value" style="font-size:20px">Free</div>
-      <div class="stat-sub">Upgrade for full access</div>
+      <div class="stat-label">Total P&L</div>
+      <div class="stat-value" id="stat-pnl">—</div>
+      <div class="stat-sub" id="stat-winrate">Win rate: —</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Balance</div>
+      <div class="stat-value" id="stat-balance">—</div>
+      <div class="stat-sub">Available USDT</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Today P&L</div>
+      <div class="stat-value" id="stat-daily-pnl">—</div>
+      <div class="stat-sub" id="stat-daily-sub">Daily performance</div>
     </div>
   </div>
 
-  <!-- Bot Status -->
-  <p class="section-title">Live Bot Status</p>
+  <!-- BOT STATUS -->
+  <div class="section-title">
+    Live Bot Status
+    <button class="refresh-btn" onclick="checkBotHealth()">↻ Refresh</button>
+  </div>
   <div class="bot-status">
     <div>
-      <div><span class="status-dot"></span><span class="bot-label">NeuralTrade Bot v5.0</span></div>
-      <div class="bot-meta">Railway · AWS ap-southeast-1 · NANO instance</div>
+      <div>
+        <span class="status-dot checking" id="status-dot"></span>
+        <span class="bot-label">NeuralTrade Bot v6.0</span>
+      </div>
+      <div class="bot-meta">Railway · Groq AI Brain · Bybit Testnet</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <span class="badge badge-green">● ACTIVE</span>
-      <span class="badge badge-yellow">Bybit Connected</span>
+      <span class="badge badge-green" id="bot-badge">● Checking...</span>
+      <span class="badge badge-yellow">Bybit Testnet</span>
+      <span class="badge badge-purple">Groq AI</span>
     </div>
   </div>
 
-  <!-- Recent Trades placeholder -->
-  <p class="section-title">Recent Signals</p>
+  <!-- RISK + DAILY -->
+  <div class="two-col">
+    <!-- Risk Engine -->
+    <div class="panel">
+      <div class="panel-title">🛡️ Risk Engine</div>
+      <div class="risk-row">
+        <span class="risk-key">Daily Loss Limit</span>
+        <span class="risk-val" id="risk-daily-limit">5.0%</span>
+      </div>
+      <div class="risk-row">
+        <span class="risk-key">Daily Loss Used</span>
+        <span class="risk-val" id="risk-daily-used">—</span>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-fill" id="risk-bar" style="width:0%;background:#4caf76"></div>
+      </div>
+      <div class="risk-row" style="margin-top:10px">
+        <span class="risk-key">Open Positions</span>
+        <span class="risk-val" id="risk-positions">—</span>
+      </div>
+      <div class="risk-row">
+        <span class="risk-key">Consecutive Losses</span>
+        <span class="risk-val" id="risk-losses">—</span>
+      </div>
+      <div class="risk-row">
+        <span class="risk-key">Emergency Stop</span>
+        <span class="risk-val" id="risk-emergency">—</span>
+      </div>
+    </div>
+
+    <!-- Coin Signals -->
+    <div class="panel">
+      <div class="panel-title">📊 Coin Analysis</div>
+      <div class="coins-grid" id="coins-grid">
+        <div class="empty">Waiting for first analysis cycle...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENT TRADES -->
+  <div class="section-title">
+    Recent Trades
+    <button class="refresh-btn" onclick="loadTrades()">↻ Refresh</button>
+  </div>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
           <th>Pair</th>
           <th>Signal</th>
+          <th>Strategy</th>
           <th>Entry</th>
+          <th>Confidence</th>
           <th>Status</th>
           <th>P&L</th>
         </tr>
       </thead>
       <tbody id="trades-body">
-        <tr>
-          <td>BTC/USDT</td>
-          <td style="color:#4caf76">LONG</td>
-          <td>$83,240</td>
-          <td><span class="badge badge-green">Open</span></td>
-          <td class="stat-green">+2.4%</td>
-        </tr>
-        <tr>
-          <td>ETH/USDT</td>
-          <td style="color:#f07070">SHORT</td>
-          <td>$1,980</td>
-          <td><span class="badge" style="background:#1a0f0f;color:#f07070;border:1px solid #3a1a1a">Closed</span></td>
-          <td class="stat-green">+1.1%</td>
-        </tr>
-        <tr>
-          <td>SOL/USDT</td>
-          <td style="color:#4caf76">LONG</td>
-          <td>$128.50</td>
-          <td><span class="badge badge-green">Open</span></td>
-          <td class="stat-red">-0.3%</td>
-        </tr>
+        <tr><td colspan="7" class="empty">Loading trades...</td></tr>
       </tbody>
     </table>
   </div>
 
-  <!-- Coming Soon -->
-  <div class="coming-soon">
-    <h3>🚀 Bot v6.0 — Coming Soon</h3>
-    <p>Advanced AI signals, live PnL tracking, and full Bybit integration. Stay tuned.</p>
-  </div>
-
-  <!-- Upgrade banner -->
-  <div class="upgrade-banner">
+  <!-- UPGRADE BANNER (shown only for free users) -->
+  <div class="upgrade-banner" id="upgrade-banner" style="display:none">
     <div>
       <h3>Unlock Full Access</h3>
-      <p>Get real-time signals, advanced analytics & priority support.</p>
+      <p>Get real-time signals, advanced analytics & priority support for $49/mo.</p>
     </div>
     <button class="btn-upgrade" onclick="window.location.href='billing.html'">Upgrade Now →</button>
   </div>
@@ -319,28 +440,279 @@
 <script>
   const SUPABASE_URL = 'https://ctzvwqsfwqffllelpyai.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_5E9NSQb9WV4QoOKnRhMpoQ_ddA7tM2W';
+  const RAILWAY_URL  = 'https://neauraltrade-production.up.railway.app';
+
   const { createClient } = supabase;
   const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+  let currentUser = null;
+
+  // ─── INIT ───────────────────────────────────
   async function init() {
     const { data: { session } } = await _supabase.auth.getSession();
-    if (!session) {
-      window.location.href = 'auth.html';
-      return;
-    }
-    const user = session.user;
-    const name = user.user_metadata?.full_name || user.email.split('@')[0];
+    if (!session) { window.location.href = 'auth.html'; return; }
+
+    currentUser = session.user;
+    const name = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
     document.getElementById('user-name').textContent = name;
-    document.getElementById('user-email').textContent = user.email;
+    document.getElementById('user-email').textContent = currentUser.email;
+
     document.getElementById('loading').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
+
+    // Load all data in parallel
+    await Promise.all([
+      checkBotHealth(),
+      loadStats(),
+      loadTrades(),
+      loadRiskState(),
+      loadCoinAnalysis()
+    ]);
+
+    // Show upgrade banner for free users
+    const { data: profile } = await _supabase
+      .from('profiles').select('plan, subscription_status')
+      .eq('id', currentUser.id).single();
+
+    if (!profile || profile.plan === 'free' || profile.subscription_status !== 'active') {
+      document.getElementById('upgrade-banner').style.display = 'flex';
+    }
+
+    // Update welcome message
+    document.getElementById('welcome-sub').textContent =
+      `Here's your NeuralTrade AI v6.0 overview — Bot is live on Railway.`;
+
+    // Auto-refresh every 60 seconds
+    setInterval(() => {
+      checkBotHealth();
+      loadTrades();
+      loadRiskState();
+      loadCoinAnalysis();
+    }, 60000);
   }
 
+  // ─── BOT HEALTH CHECK ────────────────────────
+  async function checkBotHealth() {
+    const dot   = document.getElementById('status-dot');
+    const badge = document.getElementById('bot-badge');
+    const statStatus    = document.getElementById('stat-status');
+    const statStatusSub = document.getElementById('stat-status-sub');
+
+    dot.className = 'status-dot checking';
+    try {
+      const res = await fetch(`${RAILWAY_URL}/health`, { signal: AbortSignal.timeout(5000) });
+      const data = await res.json();
+
+      if (data.status === 'ok') {
+        dot.className = 'status-dot';
+        badge.textContent = '● ACTIVE';
+        badge.className = 'badge badge-green';
+        statStatus.textContent = 'ACTIVE';
+        statStatus.className = 'stat-value stat-green';
+        statStatusSub.textContent = `v${data.version} · Running on Railway`;
+      } else throw new Error('Bad status');
+
+    } catch (e) {
+      dot.className = 'status-dot offline';
+      badge.textContent = '● OFFLINE';
+      badge.className = 'badge badge-red';
+      statStatus.textContent = 'OFFLINE';
+      statStatus.className = 'stat-value stat-red';
+      statStatusSub.textContent = 'Cannot reach Railway server';
+    }
+  }
+
+  // ─── LOAD STATS ─────────────────────────────
+  async function loadStats() {
+    try {
+      const { data: trades } = await _supabase
+        .from('trades')
+        .select('pnl, status')
+        .eq('user_id', currentUser.id);
+
+      if (!trades) return;
+
+      const closed   = trades.filter(t => t.status === 'closed');
+      const totalPnl = closed.reduce((sum, t) => sum + (t.pnl || 0), 0);
+      const wins     = closed.filter(t => t.pnl > 0).length;
+      const winRate  = closed.length > 0 ? ((wins / closed.length) * 100).toFixed(1) : 0;
+
+      document.getElementById('stat-trades').textContent = trades.length;
+
+      const pnlEl = document.getElementById('stat-pnl');
+      pnlEl.textContent = `${totalPnl >= 0 ? '+' : ''}$${totalPnl.toFixed(2)}`;
+      pnlEl.className = `stat-value ${totalPnl >= 0 ? 'stat-green' : 'stat-red'}`;
+      document.getElementById('stat-winrate').textContent = `Win rate: ${winRate}%`;
+
+    } catch (e) {
+      console.error('Stats error:', e);
+    }
+  }
+
+  // ─── LOAD RISK STATE ────────────────────────
+  async function loadRiskState() {
+    try {
+      const { data } = await _supabase
+        .from('risk_state')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .single();
+
+      if (!data) {
+        document.getElementById('stat-balance').textContent = '$0';
+        return;
+      }
+
+      // Balance
+      document.getElementById('stat-balance').textContent =
+        `$${(data.available_balance || 0).toFixed(2)}`;
+
+      // Daily P&L
+      const dpnl = data.daily_pnl || 0;
+      const dpnlEl = document.getElementById('stat-daily-pnl');
+      dpnlEl.textContent = `${dpnl >= 0 ? '+' : ''}$${dpnl.toFixed(2)}`;
+      dpnlEl.className = `stat-value ${dpnl >= 0 ? 'stat-green' : 'stat-red'}`;
+
+      // Risk panel
+      const dailyLoss    = data.daily_loss || 0;
+      const startBal     = data.start_of_day_balance || 1;
+      const lossPercent  = ((dailyLoss / startBal) * 100).toFixed(2);
+      const lossLimit    = 5.0;
+      const barPct       = Math.min((lossPercent / lossLimit) * 100, 100);
+
+      document.getElementById('risk-daily-used').textContent = `${lossPercent}%`;
+      document.getElementById('risk-positions').textContent  = data.open_positions || 0;
+      document.getElementById('risk-losses').textContent     = data.consecutive_losses || 0;
+
+      const emergEl = document.getElementById('risk-emergency');
+      if (data.emergency_stopped) {
+        emergEl.textContent = '🚨 STOPPED';
+        emergEl.style.color = '#f07070';
+      } else {
+        emergEl.textContent = '✅ Normal';
+        emergEl.style.color = '#4caf76';
+      }
+
+      const bar = document.getElementById('risk-bar');
+      bar.style.width = `${barPct}%`;
+      bar.style.background = barPct > 80 ? '#f07070' : barPct > 50 ? '#f5c842' : '#4caf76';
+
+    } catch (e) {
+      console.error('Risk state error:', e);
+    }
+  }
+
+  // ─── LOAD TRADES ────────────────────────────
+  async function loadTrades() {
+    try {
+      const { data: trades } = await _supabase
+        .from('trades')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('timestamp', { ascending: false })
+        .limit(10);
+
+      const tbody = document.getElementById('trades-body');
+
+      if (!trades || trades.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="empty">
+          No trades yet — bot is analyzing markets and will trade when conditions are right 🧠
+        </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = trades.map(t => {
+        const pnl     = t.pnl || 0;
+        const pnlStr  = t.status === 'open' ? '—' :
+          `${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}%`;
+        const pnlColor = pnl >= 0 ? '#4caf76' : '#f07070';
+
+        const statusBadge = t.status === 'open'
+          ? `<span class="badge badge-green">Open</span>`
+          : t.status === 'closed'
+          ? `<span class="badge" style="background:#1a1a25;color:#888;border:1px solid #2a2a3a">Closed</span>`
+          : `<span class="badge badge-red">Error</span>`;
+
+        const signalColor = t.action === 'BUY' ? '#4caf76' : '#f07070';
+        const entry = t.entry_price ? `$${parseFloat(t.entry_price).toLocaleString()}` : '—';
+        const conf  = t.confidence ? `${t.confidence}%` : '—';
+        const time  = new Date(t.timestamp).toLocaleDateString('en-US', {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+
+        return `<tr>
+          <td><strong>${t.symbol}/USDT</strong><br>
+            <span style="font-size:11px;color:#555">${time}</span>
+          </td>
+          <td style="color:${signalColor};font-weight:700">${t.action}</td>
+          <td style="color:#888">${t.strategy || '—'}</td>
+          <td>${entry}</td>
+          <td style="color:#f5c842">${conf}</td>
+          <td>${statusBadge}</td>
+          <td style="color:${t.status === 'open' ? '#666' : pnlColor};font-weight:600">
+            ${pnlStr}
+          </td>
+        </tr>`;
+      }).join('');
+
+    } catch (e) {
+      console.error('Trades error:', e);
+      document.getElementById('trades-body').innerHTML =
+        `<tr><td colspan="7" class="empty">Error loading trades</td></tr>`;
+    }
+  }
+
+  // ─── LOAD COIN ANALYSIS ─────────────────────
+  async function loadCoinAnalysis() {
+    try {
+      const { data: analyses } = await _supabase
+        .from('market_analysis')
+        .select('symbol, data, updated_at')
+        .eq('user_id', currentUser.id)
+        .order('updated_at', { ascending: false })
+        .limit(11);
+
+      const grid = document.getElementById('coins-grid');
+
+      if (!analyses || analyses.length === 0) {
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+          Waiting for first analysis cycle... Bot analyzes every 60 seconds 🔄
+        </div>`;
+        return;
+      }
+
+      grid.innerHTML = analyses.map(a => {
+        const d       = a.data || {};
+        const decision = d.decision || {};
+        const regime   = d.regime || 'MIXED';
+        const action   = decision.action || 'HOLD';
+        const conf     = decision.confidence || 0;
+
+        return `<div class="coin-card">
+          <div class="coin-top">
+            <span class="coin-name">${a.symbol}</span>
+            <span class="coin-regime regime-${regime}">${regime}</span>
+          </div>
+          <div class="coin-signal signal-${action}">${action}</div>
+          <div class="coin-conf">Confidence: ${conf}%</div>
+          <div class="conf-bar">
+            <div class="conf-fill" style="width:${conf}%"></div>
+          </div>
+        </div>`;
+      }).join('');
+
+    } catch (e) {
+      console.error('Coin analysis error:', e);
+    }
+  }
+
+  // ─── SIGN OUT ───────────────────────────────
   async function signOut() {
     await _supabase.auth.signOut();
     window.location.href = 'auth.html';
   }
 
+  // ─── START ──────────────────────────────────
   init();
 </script>
 </body>
